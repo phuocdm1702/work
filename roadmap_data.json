@@ -1,0 +1,176 @@
+{
+    "title": "Python Fullstack Roadmap (8 Months)",
+    "phases": [
+        {
+            "id": 1,
+            "title": "Giai đoạn 1: Python Nền Tảng (Tháng 1)",
+            "weeks": [
+                {
+                    "week": 1,
+                    "topic": "Cơ bản & Setup",
+                    "details": [
+                        "Cài đặt Python 3.12, venv, pip, .gitignore chuyên sâu",
+                        "Biến, Kiểu dữ liệu (So sánh Java Primitive vs Python Objects)",
+                        "Toán tử, Indentation (Quy tắc khoảng trắng thay cho {})",
+                        "Cấu trúc điều khiển: if/elif/else"
+                    ],
+                    "status": "in_progress"
+                },
+                {
+                    "week": 2,
+                    "topic": "Cấu trúc dữ liệu & Vòng lặp",
+                    "details": [
+                        "Vòng lặp for/while (else in loops)",
+                        "List, Tuple, Set, Dict (Methods chi tiết)",
+                        "List Comprehension (Đặc sản Python)",
+                        "Slicing nâng cao"
+                    ],
+                    "status": "pending"
+                },
+                {
+                    "week": 3,
+                    "topic": "Hàm & Module",
+                    "details": [
+                        "def, return, type hints (Khai báo kiểu như Java)",
+                        "*args, **kwargs (Flexible parameters)",
+                        "Lambda, Scope (LEGB), __init__.py",
+                        "Standard Library: os, sys, pathlib, json"
+                    ],
+                    "status": "pending"
+                },
+                {
+                    "week": 4,
+                    "topic": "Xử lý File & Exception",
+                    "details": [
+                        "Đọc/Ghi file: txt, csv, json, binary",
+                        "Exception Handling (try/except/finally/raise)",
+                        "Custom Exceptions",
+                        "Mini Project: Tool ETL cơ bản"
+                    ],
+                    "status": "pending"
+                }
+            ]
+        },
+        {
+            "id": 2,
+            "title": "Giai đoạn 2: OOP & Design Patterns (Tháng 2)",
+            "weeks": [
+                {
+                    "week": 5,
+                    "topic": "Core OOP Python",
+                    "details": [
+                        "Class, Object, self, __init__",
+                        "Encapsulation: _, __ và @property",
+                        "Inheritance: Đa kế thừa & MRO",
+                        "Polymorphism & Duck Typing"
+                    ],
+                    "status": "locked"
+                },
+                {
+                    "week": 6,
+                    "topic": "Advanced OOP",
+                    "details": [
+                        "Dunder methods: __str__, __len__, __iter__",
+                        "ABC (Abstract Base Classes)",
+                        "Classmethod vs Staticmethod",
+                        "Dataclasses & NamedTuple"
+                    ],
+                    "status": "locked"
+                },
+                {
+                    "week": 7,
+                    "topic": "Design Patterns",
+                    "details": [
+                        "Creational: Singleton, Factory",
+                        "Structural: Decorator, Proxy",
+                        "Behavioral: Strategy, Observer",
+                        "MVC/MVVM Architecture"
+                    ],
+                    "status": "locked"
+                }
+            ]
+        },
+        {
+            "id": 3,
+            "title": "Giai đoạn 3: Python Nâng Cao (Tháng 3)",
+            "weeks": [
+                {
+                    "week": 8,
+                    "topic": "Advanced Tools",
+                    "details": [
+                        "Decorators (Stacking, Parameterized)",
+                        "Generators & Iterators (yield)",
+                        "Context Managers (with statement)",
+                        "Metaprogramming cơ bản"
+                    ],
+                    "status": "locked"
+                },
+                {
+                    "week": 9,
+                    "topic": "Concurrency",
+                    "details": [
+                        "Threading vs Multiprocessing",
+                        "Asyncio: event loop, async/await",
+                        "Task, gather, aiohttp",
+                        "GIL limitation"
+                    ],
+                    "status": "locked"
+                }
+            ]
+        },
+        {
+            "id": 4,
+            "title": "Giai đoạn 4: Database Chuyên Sâu (Tháng 4)",
+            "weeks": [
+                {
+                    "week": 10,
+                    "topic": "SQLAlchemy ORM",
+                    "details": [
+                        "Models, Relationships (1-1, 1-N, M-N)",
+                        "Session management, Migrations (Alembic)",
+                        "Async SQLAlchemy",
+                        "Query Optimization (N+1 problem)"
+                    ],
+                    "status": "locked"
+                },
+                {
+                    "week": 11,
+                    "topic": "NoSQL & Redis",
+                    "details": [
+                        "MongoDB với Motor",
+                        "Redis: Caching, Pub/Sub",
+                        "TiDB & Horizontal Scaling concepts"
+                    ],
+                    "status": "locked"
+                }
+            ]
+        },
+        {
+            "id": 5,
+            "title": "Giai đoạn 5: Backend API với FastAPI (Tháng 5)",
+            "weeks": [
+                {
+                    "week": 12,
+                    "topic": "FastAPI Core",
+                    "details": [
+                        "Pydantic v2 (Validation)",
+                        "Dependency Injection (Depends)",
+                        "Router, Middleware, Background Tasks"
+                    ],
+                    "status": "locked"
+                },
+                {
+                    "week": 13,
+                    "topic": "Security & Deployment",
+                    "details": [
+                        "OAuth2, JWT Auth",
+                        "RBAC (Role-based Access Control)",
+                        "Dockerize FastAPI app",
+                        "Testing với pytest & httpx"
+                    ],
+                    "status": "locked"
+                }
+            ]
+        }
+    ]
+}
