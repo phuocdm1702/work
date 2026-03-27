@@ -688,6 +688,99 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Git Flags & Options (Common -flags) -->
+                        <div class="surface p-8 rounded-2xl border border-slate-700/50 shadow-xl mt-8">
+                            <h3 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-sky-500/20 flex items-center justify-center">
+                                    <svg class="w-6 h-6 text-sky-400" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+                                    </svg>
+                                </div>
+                                Giải mã các Flags (Options) phổ biến
+                            </h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div class="space-y-6">
+                                    <div>
+                                        <h4 class="text-xs font-black text-sky-400 uppercase tracking-[0.2em] mb-3">Lệnh
+                                            checkout / switch</h4>
+                                        <ul class="space-y-3">
+                                            <li class="flex items-start gap-2">
+                                                <code
+                                                    class="text-emerald-400 bg-emerald-950/30 px-2 py-0.5 rounded text-[11px] font-bold">-b</code>
+                                                <span class="text-sm text-slate-400"><strong>Branch:</strong> Tạo nhánh
+                                                    mới và chuyển sang đó ngay lập tức.</span>
+                                            </li>
+                                            <li class="flex items-start gap-2">
+                                                <code
+                                                    class="text-emerald-400 bg-emerald-950/30 px-2 py-0.5 rounded text-[11px] font-bold">-c</code>
+                                                <span class="text-sm text-slate-400"><strong>Create:</strong> (Trong
+                                                    lệnh `git switch`) Tương đương `-b` của checkout.</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-xs font-black text-sky-400 uppercase tracking-[0.2em] mb-3">Lệnh
+                                            commit</h4>
+                                        <ul class="space-y-3">
+                                            <li class="flex items-start gap-2">
+                                                <code
+                                                    class="text-emerald-400 bg-emerald-950/30 px-2 py-0.5 rounded text-[11px] font-bold">-m</code>
+                                                <span class="text-sm text-slate-400"><strong>Message:</strong> Viết nội
+                                                    dung commit trực tiếp trên terminal.</span>
+                                            </li>
+                                            <li class="flex items-start gap-2">
+                                                <code
+                                                    class="text-emerald-400 bg-emerald-950/30 px-2 py-0.5 rounded text-[11px] font-bold">-am</code>
+                                                <span class="text-sm text-slate-400"><strong>Add & Message:</strong> Vừa
+                                                    `add` (cho file đã track) vừa `commit` một lúc.</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="space-y-6">
+                                    <div>
+                                        <h4 class="text-xs font-black text-sky-400 uppercase tracking-[0.2em] mb-3">Lệnh
+                                            push / remote</h4>
+                                        <ul class="space-y-3">
+                                            <li class="flex items-start gap-2">
+                                                <code
+                                                    class="text-emerald-400 bg-emerald-950/30 px-2 py-0.5 rounded text-[11px] font-bold">-u</code>
+                                                <span class="text-sm text-slate-400"><strong>Upstream:</strong> Thiết
+                                                    lập mối quan hệ theo dõi giữa nhánh local và remote.</span>
+                                            </li>
+                                            <li class="flex items-start gap-2">
+                                                <code
+                                                    class="text-emerald-400 bg-emerald-950/30 px-2 py-0.5 rounded text-[11px] font-bold">-f</code>
+                                                <span class="text-sm text-rose-400"><strong>Force:</strong> Ép buộc đẩy
+                                                    code lên (CỰC KỲ NGUY HIỂM - Có thể ghi đè code của người
+                                                    khác).</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-xs font-black text-sky-400 uppercase tracking-[0.2em] mb-3">Lệnh
+                                            branch</h4>
+                                        <ul class="space-y-3">
+                                            <li class="flex items-start gap-2">
+                                                <code
+                                                    class="text-emerald-400 bg-emerald-950/30 px-2 py-0.5 rounded text-[11px] font-bold">-d</code>
+                                                <span class="text-sm text-slate-400"><strong>Delete:</strong> Xóa một
+                                                    nhánh (chỉ xóa khi đã merge).</span>
+                                            </li>
+                                            <li class="flex items-start gap-2">
+                                                <code
+                                                    class="text-emerald-400 bg-emerald-950/30 px-2 py-0.5 rounded text-[11px] font-bold">-D</code>
+                                                <span class="text-sm text-rose-400"><strong>Force Delete:</strong> Xóa
+                                                    nhánh bất kể đã merge hay chưa.</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Right: Statistics & Guides -->
