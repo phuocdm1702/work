@@ -1,0 +1,46 @@
+# =================================================================
+# BUỔI 2: VÒNG LẶP & CẤU TRÚC ĐIỀU KHIỂN (PRACTICE)
+# =================================================================
+
+# 1. ENUMERATE (Thay thế việc dùng range(len(list)) như trong Java)
+# Bài tập: In ra danh sách học sinh kèm số thứ tự (bắt đầu từ 1)
+students = ["An", "Bình", "Chi", "Dũng"]
+print("--- Task 1: Enumerate ---")
+for i, student in enumerate(students, start=1):
+    print(f"{i}. {student}")
+
+
+# 2. ZIP (Kết hợp nhiều list cùng lúc)
+# Bài tập: Kết hợp tên học sinh và điểm số tương ứng
+scores = [8.5, 9.0, 7.5, 8.0]
+print("\n--- Task 2: Zip ---")
+for student, score in zip(students, scores):
+    print(f"{student}: {score} điểm")
+
+
+# 3. LIST COMPREHENSION (Kỹ thuật tạo list cực nhanh trong Python)
+# Bài tập: Tạo một list mới chứa bình phương của các số chẵn từ 1 đến 10
+print("\n--- Task 3: List Comprehension ---")
+squares_of_evens = [x**2 for x in range(1, 11) if x % 2 == 0]
+print(f"Squares of evens: {squares_of_evens}")
+
+
+# 4. CONTROL FLOW (if-elif-else & Walrus Operator :=)
+# Bài tập: Kiểm tra độ dài tên học sinh. Nếu > 3 ký tự thì in ra độ dài đó.
+print("\n--- Task 4: Walrus Operator ---")
+name = "Phuoc"
+if (n := len(name)) > 3:
+    print(f"Tên '{name}' có {n} ký tự (dài hơn 3)")
+
+
+# 5. FOR-ELSE (Tính năng lạ so với Java)
+# Bài tập: Tìm số 7 trong list. Nếu tìm thấy thì 'break', nếu không thấy hết list thì in "Không tìm thấy".
+numbers = [1, 3, 5, 8, 9]
+print("\n--- Task 5: For-Else ---")
+search_target = 7
+for num in numbers:
+    if num == search_target:
+        print(f"Tìm thấy số {search_target}!")
+        break
+else:
+    print(f"Không tìm thấy số {search_target} trong danh sách.")
