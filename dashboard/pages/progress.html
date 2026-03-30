@@ -1,0 +1,39 @@
+<div class="surface p-8 rounded-2xl border border-slate-700/50 shadow-xl" x-cloak>
+    <h3 class="text-2xl font-bold mb-6">Tiến độ học tập</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="space-y-6">
+            <h4 class="text-sm font-black text-sky-400 uppercase tracking-widest">Kỹ năng đạt được</h4>
+            <div class="space-y-4">
+                <template x-for="(val, skill) in progress.skills" :key="skill">
+                    <div>
+                        <div class="flex justify-between text-xs mb-1">
+                            <span class="text-slate-300 font-bold" x-text="skill"></span>
+                            <span class="text-sky-400" x-text="val + '/10'"></span>
+                        </div>
+                        <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
+                            <div class="h-full bg-sky-500 transition-all duration-500" :style="`width: ${val * 10}%`"></div>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
+        <div class="space-y-6">
+            <h4 class="text-sm font-black text-sky-400 uppercase tracking-widest">Cột mốc quan trọng</h4>
+            <div class="space-y-4">
+                <template x-for="milestone in progress.milestones" :key="milestone.id">
+                    <div class="flex items-center gap-4 p-4 bg-slate-800/50 rounded-xl border border-slate-700/50">
+                        <div :class="milestone.completed ? 'bg-emerald-500' : 'bg-slate-700'" class="w-10 h-10 rounded-lg flex items-center justify-center shrink-0">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="text-sm font-bold text-slate-200" x-text="milestone.title"></div>
+                            <div class="text-xs text-slate-500">Deadline: <span x-text="milestone.deadline"></span></div>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </div>
+</div>

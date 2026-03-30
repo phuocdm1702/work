@@ -1,0 +1,73 @@
+<div class="max-w-4xl mx-auto py-8" x-cloak>
+    <div class="flex items-center justify-between mb-8">
+        <h2 class="text-2xl font-bold">Lộ trình học tập 8 tháng</h2>
+        <div class="text-sm text-slate-400">Cập nhật: 25/03/2026</div>
+    </div>
+    <div class="relative pl-8 border-l-2 border-slate-700 space-y-12">
+        <template x-for="phase in roadmap.phases" :key="phase.id">
+            <div class="relative">
+                <!-- Node Circle -->
+                <div :class="{
+                    'bg-sky-500': phase.id === 1,
+                    'bg-slate-700': phase.id > 1
+                }"
+                    class="absolute -left-[41px] w-5 h-5 rounded-full border-4 border-slate-900 transition-colors">
+                </div>
+
+                <div class="surface p-6 rounded-xl hover:border-sky-500/50 transition-all">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-bold text-sky-400" x-text="phase.title"></h3>
+                        <span
+                            class="text-xs font-medium px-2 py-1 rounded-full bg-slate-800 text-slate-400 border border-slate-700">Giai
+                            đoạn <span x-text="phase.id"></span></span>
+                    </div>
+
+                    <div class="grid gap-4 mt-6">
+                        <template x-for="week in phase.weeks" :key="week.week">
+                            <div
+                                class="bg-slate-800/30 p-4 rounded-lg border border-slate-700/50 hover:bg-slate-800/50 transition-all">
+                                <div class="flex justify-between items-center mb-3">
+                                    <div class="flex items-center gap-3">
+                                        <span
+                                            class="w-8 h-8 rounded bg-slate-700 flex items-center justify-center text-xs font-bold"
+                                            x-text="'W'+week.week"></span>
+                                        <span class="font-bold text-slate-200" x-text="week.topic"></span>
+                                    </div>
+                                    <span :class="{
+                                        'bg-sky-500/20 text-sky-400 border-sky-500/30': week.status === 'in_progress',
+                                        'bg-green-500/20 text-green-400 border-green-500/30': week.status === 'completed',
+                                        'bg-slate-700/50 text-slate-500 border-slate-600/30': week.status === 'pending' || week.status === 'locked'
+                                    }" class="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded border"
+                                        x-text="week.status === 'in_progress' ? 'Đang học' : (week.status === 'completed' ? 'Hoàn thành' : (week.status === 'locked' ? 'Chưa mở' : 'Chờ học'))"></span>
+                                </div>
+                                <ul class="text-sm text-slate-400 space-y-2 ml-11">
+                                    <template x-for="detail in week.details" :key="detail">
+                                        <li class="flex items-start gap-2">
+                                            <svg class="w-4 h-4 mt-0.5 text-sky-500/50 shrink-0" fill="none"
+                                                stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    stroke-width="2" d="M9 5l7 7-7 7" />
+                                            </svg>
+                                            <span x-text="detail"></span>
+                                        </li>
+                                    </template>
+                                </ul>
+                                <div class="mt-4 flex justify-end">
+                                    <button @click="currentTab = 'docs'; currentSession = 's01-setup'; window.location.hash = '#/docs'"
+                                        class="text-xs text-sky-400 hover:text-sky-300 font-medium flex items-center gap-1 group">
+                                        Xem tài liệu
+                                        <svg class="w-3 h-3 group-hover:translate-x-1 transition-transform"
+                                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                stroke-width="2" d="M14 5l7 7-7 7" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </template>
+    </div>
+</div>
