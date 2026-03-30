@@ -1,0 +1,34 @@
+<div class="max-w-4xl mx-auto py-8" x-cloak>
+    <div class="surface p-8 rounded-2xl border border-slate-700/50 shadow-xl">
+        <h3 class="text-2xl font-bold mb-6">Cài đặt tài khoản</h3>
+        <div class="space-y-6">
+            <div>
+                <label class="block text-sm font-medium text-slate-400 mb-2">Tên hiển thị</label>
+                <input type="text" x-model="settings.name" 
+                    class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-sky-500">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-400 mb-2">Avatar (Emoji)</label>
+                <input type="text" x-model="settings.avatar" 
+                    class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-sky-500">
+            </div>
+            <div class="pt-4">
+                <button @click="localStorage.setItem('cms_settings', JSON.stringify(settings)); alert('Đã lưu cài đặt!')" 
+                    class="bg-sky-500 hover:bg-sky-600 text-white font-bold py-2 px-6 rounded-lg transition-colors">
+                    Lưu thay đổi
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-8 surface p-8 rounded-2xl border border-slate-700/50 shadow-xl">
+        <h3 class="text-2xl font-bold mb-6 text-rose-400">Dữ liệu & Hệ thống</h3>
+        <div class="space-y-4">
+            <p class="text-slate-400 text-sm">Xóa toàn bộ dữ liệu học tập trong localStorage (Tiến độ, Git Config, Docs Cache).</p>
+            <button @click="if(confirm('Bạn có chắc chắn muốn reset toàn bộ dữ liệu?')) { localStorage.clear(); location.reload(); }" 
+                class="border border-rose-500/50 text-rose-500 hover:bg-rose-500 hover:text-white font-bold py-2 px-6 rounded-lg transition-all">
+                Reset toàn bộ dữ liệu
+            </button>
+        </div>
+    </div>
+</div>

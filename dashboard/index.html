@@ -69,7 +69,7 @@
 
         <nav class="flex-1 px-4 space-y-2 mt-4">
             <template x-for="item in menuItems" :key="item.id">
-                <button @click="currentTab = item.id; if(item.id === 'docs') { sidebarOpen = false; }"
+                <button @click="window.location.hash = '#/' + item.id; if(item.id === 'docs') { sidebarOpen = false; }"
                     :class="currentTab === item.id ? 'sidebar-item-active text-sky-400' : 'text-slate-400 hover:bg-slate-800'"
                     class="w-full flex items-center p-3 rounded-lg transition-colors group">
                     <span x-html="item.icon" class="w-6 h-6"></span>
@@ -112,780 +112,14 @@
             </div>
         </header>
 
-        <!-- Page Area -->
-        <div class="flex-1 overflow-y-auto p-8">
-
-            <!-- Dashboard Home -->
-            <div x-show="currentTab === 'dashboard'" class="space-y-8" x-cloak>
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <template x-for="stat in stats" :key="stat.label">
-                        <div class="surface p-6 rounded-xl">
-                            <div class="text-slate-400 text-sm mb-1" x-text="stat.label"></div>
-                            <div class="text-2xl font-bold text-sky-400" x-text="stat.value"></div>
-                        </div>
-                    </template>
-                </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <div class="surface p-6 rounded-xl">
-                        <h3 class="font-bold mb-4">Tiến độ theo giai đoạn</h3>
-                        <canvas id="progressChart" height="200"></canvas>
-                    </div>
-                    <div class="surface p-6 rounded-xl">
-                        <h3 class="font-bold mb-4">Hoạt động gần đây</h3>
-                        <div class="space-y-4">
-                            <template x-for="act in recentActivity" :key="act.id">
-                                <div class="flex items-start gap-4">
-                                    <template x-if="act.type === 'case_study'">
-                                        <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6 dark:bg-blue-900/20">
-                                            <div class="flex items-center mb-2">
-                                                <svg class="w-5 h-5 text-blue-500 mr-2" fill="none"
-                                                    stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        stroke-width="2"
-                                                        d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
-                                                    </path>
-                                                </svg>
-                                                <h4 class="font-bold text-blue-800 dark:text-blue-300"
-                                                    x-text="act.title"></h4>
-                                            </div>
-                                            <p class="text-blue-700 dark:text-blue-200 leading-relaxed"
-                                                x-text="act.text"></p>
-                                        </div>
-                                    </template>
-
-                                    <template x-if="act.type === 'concept'">
-                                        <div class="mb-8">
-                                            <h4
-                                                class="text-xl font-bold text-slate-800 dark:text-white mb-3 flex items-center">
-                                                <span class="w-2 h-6 bg-indigo-500 rounded mr-3"></span>
-                                                <span x-text="act.title"></span>
-                                            </h4>
-                                            <div class="prose dark:prose-invert max-w-none">
-                                                <p class="text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-line"
-                                                    x-html="act.text.replace(/\*\*(.*?)\*\*/g, '<strong class=\'text-indigo-600 dark:text-indigo-400\'>$1</strong>')">
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </template>
-                                </div>
-                            </template>
-                        </div>
-                    </div>
-                </div>
+        <!-- Page Area (Router Outlet) -->
+        <div id="router-outlet" class="flex-1 overflow-y-auto p-8">
+            <div class="flex items-center justify-center h-full">
+                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-sky-500"></div>
             </div>
-
-            <!-- Roadmap Page -->
-            <div x-show="currentTab === 'roadmap'" class="max-w-4xl mx-auto py-8" x-cloak>
-                <div class="flex items-center justify-between mb-8">
-                    <h2 class="text-2xl font-bold">Lộ trình học tập 8 tháng</h2>
-                    <div class="text-sm text-slate-400">Cập nhật: 25/03/2026</div>
-                </div>
-                <div class="relative pl-8 border-l-2 border-slate-700 space-y-12">
-                    <template x-for="phase in roadmap.phases" :key="phase.id">
-                        <div class="relative">
-                            <!-- Node Circle -->
-                            <div :class="{
-                                'bg-sky-500': phase.id === 1,
-                                'bg-slate-700': phase.id > 1
-                            }"
-                                class="absolute -left-[41px] w-5 h-5 rounded-full border-4 border-slate-900 transition-colors">
-                            </div>
-
-                            <div class="surface p-6 rounded-xl hover:border-sky-500/50 transition-all">
-                                <div class="flex items-center justify-between mb-4">
-                                    <h3 class="text-xl font-bold text-sky-400" x-text="phase.title"></h3>
-                                    <span
-                                        class="text-xs font-medium px-2 py-1 rounded-full bg-slate-800 text-slate-400 border border-slate-700">Giai
-                                        đoạn <span x-text="phase.id"></span></span>
-                                </div>
-
-                                <div class="grid gap-4 mt-6">
-                                    <template x-for="week in phase.weeks" :key="week.week">
-                                        <div
-                                            class="bg-slate-800/30 p-4 rounded-lg border border-slate-700/50 hover:bg-slate-800/50 transition-all">
-                                            <div class="flex justify-between items-center mb-3">
-                                                <div class="flex items-center gap-3">
-                                                    <span
-                                                        class="w-8 h-8 rounded bg-slate-700 flex items-center justify-center text-xs font-bold"
-                                                        x-text="'W'+week.week"></span>
-                                                    <span class="font-bold text-slate-200" x-text="week.topic"></span>
-                                                </div>
-                                                <span :class="{
-                                                    'bg-sky-500/20 text-sky-400 border-sky-500/30': week.status === 'in_progress',
-                                                    'bg-green-500/20 text-green-400 border-green-500/30': week.status === 'completed',
-                                                    'bg-slate-700/50 text-slate-500 border-slate-600/30': week.status === 'pending' || week.status === 'locked'
-                                                }" class="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded border"
-                                                    x-text="week.status === 'in_progress' ? 'Đang học' : (week.status === 'completed' ? 'Hoàn thành' : (week.status === 'locked' ? 'Chưa mở' : 'Chờ học'))"></span>
-                                            </div>
-                                            <ul class="text-sm text-slate-400 space-y-2 ml-11">
-                                                <template x-for="detail in week.details" :key="detail">
-                                                    <li class="flex items-start gap-2">
-                                                        <svg class="w-4 h-4 mt-0.5 text-sky-500/50 shrink-0" fill="none"
-                                                            stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                                stroke-width="2" d="M9 5l7 7-7 7" />
-                                                        </svg>
-                                                        <span x-text="detail"></span>
-                                                    </li>
-                                                </template>
-                                            </ul>
-                                            <div class="mt-4 flex justify-end">
-                                                <button @click="currentTab = 'docs'; currentSession = 's01-setup'"
-                                                    class="text-xs text-sky-400 hover:text-sky-300 font-medium flex items-center gap-1 group">
-                                                    Xem tài liệu
-                                                    <svg class="w-3 h-3 group-hover:translate-x-1 transition-transform"
-                                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="2" d="M14 5l7 7-7 7" />
-                                                    </svg>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </template>
-                                </div>
-                            </div>
-                        </div>
-                    </template>
-                </div>
-            </div>
-
-            <!-- Docs Page -->
-            <div x-show="currentTab === 'docs'" class="h-full flex flex-col" x-cloak>
-                <div class="flex gap-6 h-full overflow-hidden">
-                    <!-- Tree Nav -->
-                    <aside class="w-72 flex flex-col gap-4 overflow-y-auto pr-2 custom-scrollbar">
-                        <div class="surface p-4 rounded-xl border-slate-700/50">
-                            <div class="flex items-center justify-between mb-4">
-                                <h4 class="font-bold text-xs text-slate-500 uppercase tracking-widest">Tài liệu học tập
-                                </h4>
-                                <div
-                                    class="w-6 h-6 rounded bg-slate-800 flex items-center justify-center cursor-pointer hover:bg-slate-700">
-                                    <svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                    </svg>
-                                </div>
-                            </div>
-                            <div class="space-y-4">
-                                <template x-for="(phase, phaseKey) in docs" :key="phaseKey">
-                                    <div>
-                                        <div class="text-sky-400/80 font-bold text-sm mb-2 flex items-center gap-2">
-                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M19 9l-7 7-7-7M5 5l7 7-7 7" />
-                                            </svg>
-                                            <span x-text="phase.title"></span>
-                                        </div>
-                                        <div class="pl-4 space-y-1 border-l border-slate-700/50 ml-1.5">
-                                            <template x-for="session in phase.sessions" :key="session.id">
-                                                <div @click="currentSession = session.id; activeSessionData = session"
-                                                    :class="currentSession === session.id ? 'text-sky-400 bg-sky-500/10 border-sky-500/50' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 border-transparent'"
-                                                    class="cursor-pointer py-1.5 px-3 text-sm rounded transition-all border flex items-center justify-between group">
-                                                    <span x-text="session.title"></span>
-                                                    <svg x-show="currentSession === session.id" class="w-3 h-3"
-                                                        fill="currentColor" viewBox="0 0 20 20">
-                                                        <path fill-rule="evenodd"
-                                                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 1.414L10.586 9H7a1 1 0 100 2h3.586l-1.293 1.293a1 1 0 101.414 1.414l3-3a1 1 0 000-1.414z"
-                                                            clip-rule="evenodd" />
-                                                    </svg>
-                                                </div>
-                                            </template>
-                                        </div>
-                                    </div>
-                                </template>
-                            </div>
-                        </div>
-                    </aside>
-
-                    <!-- Content Area -->
-                    <div class="flex-1 flex flex-col min-w-0">
-                        <template x-if="activeSessionData">
-                            <div class="flex h-full gap-6 overflow-hidden">
-                                <article
-                                    class="flex-1 surface rounded-xl border-slate-700/50 overflow-y-auto custom-scrollbar p-10 docs-content"
-                                    id="docs-article">
-                                    <div class="max-w-4xl mx-auto">
-                                        <!-- Breadcrumbs -->
-                                        <div class="flex items-center gap-2 text-xs text-slate-500 mb-8 font-medium">
-                                            <span>Giai đoạn 1</span>
-                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M9 5l7 7-7 7" />
-                                            </svg>
-                                            <span class="text-sky-500/80" x-text="activeSessionData.title"></span>
-                                        </div>
-
-                                        <h1 class="text-4xl font-extrabold text-white mb-6 tracking-tight"
-                                            x-text="activeSessionData.title"></h1>
-
-                                        <p class="text-lg text-slate-400 mb-10 leading-relaxed"
-                                            x-text="activeSessionData.content.intro"></p>
-
-                                        <!-- Theory Sections -->
-                                        <div class="space-y-12">
-                                            <template x-for="(section, sIndex) in activeSessionData.content.theory"
-                                                :key="section.title">
-                                                <div :id="'section-' + sIndex" class="space-y-4">
-                                                    <h2 class="text-2xl font-bold text-slate-100 flex items-center gap-3"
-                                                        x-text="section.title"></h2>
-
-                                                    <!-- Concept Type -->
-                                                    <template x-if="section.type === 'concept'">
-                                                        <div class="mb-8">
-                                                            <div class="prose dark:prose-invert max-w-none">
-                                                                <p class="text-slate-400 leading-relaxed bg-slate-800/30 p-5 rounded-lg border border-slate-700/50 whitespace-pre-line"
-                                                                    x-html="section.text.replace(/\*\*(.*?)\*\*/g, '<strong class=\'text-indigo-400\'>$1</strong>')">
-                                                                </p>
-                                                            </div>
-                                                        </div>
-                                                    </template>
-
-                                                    <!-- Case Study Type -->
-                                                    <template x-if="section.type === 'case_study'">
-                                                        <div
-                                                            class="bg-blue-50 border-l-4 border-blue-500 p-5 my-6 dark:bg-blue-900/20 rounded-r-lg">
-                                                            <div class="flex items-center mb-3">
-                                                                <svg class="w-5 h-5 text-blue-500 mr-2" fill="none"
-                                                                    stroke="currentColor" viewBox="0 0 24 24">
-                                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                                        stroke-width="2"
-                                                                        d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
-                                                                    </path>
-                                                                </svg>
-                                                                <h4 class="font-bold text-blue-800 dark:text-blue-300"
-                                                                    x-text="section.title"></h4>
-                                                            </div>
-                                                            <p class="text-blue-700 dark:text-blue-200 leading-relaxed text-sm"
-                                                                x-text="section.text"></p>
-                                                        </div>
-                                                    </template>
-
-                                                    <!-- Comparison Type -->
-                                                    <template x-if="section.type === 'compare'">
-                                                        <div
-                                                            class="overflow-hidden rounded-xl border border-slate-700 shadow-2xl">
-                                                            <table class="w-full text-left border-collapse">
-                                                                <thead>
-                                                                    <tr class="bg-slate-800">
-                                                                        <th
-                                                                            class="p-4 text-xs uppercase tracking-wider text-slate-500 font-bold border-b border-slate-700">
-                                                                            Đặc điểm</th>
-                                                                        <th
-                                                                            class="p-4 text-xs uppercase tracking-wider text-sky-400 font-bold border-b border-slate-700">
-                                                                            Python Way</th>
-                                                                        <th
-                                                                            class="p-4 text-xs uppercase tracking-wider text-orange-400 font-bold border-b border-slate-700">
-                                                                            Java Equivalent</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody class="divide-y divide-slate-700/50">
-                                                                    <template x-for="item in section.items"
-                                                                        :key="item.label">
-                                                                        <tr
-                                                                            class="hover:bg-slate-800/40 transition-colors">
-                                                                            <td class="p-4 text-sm font-bold text-slate-300"
-                                                                                x-text="item.label"></td>
-                                                                            <td class="p-4 text-sm code-font text-sky-300/90"
-                                                                                x-text="item.python"></td>
-                                                                            <td class="p-4 text-sm code-font text-orange-300/90"
-                                                                                x-text="item.java"></td>
-                                                                        </tr>
-                                                                    </template>
-                                                                </tbody>
-                                                            </table>
-                                                        </div>
-                                                    </template>
-
-                                                    <!-- Note/Tip Type -->
-                                                    <template x-if="section.type === 'note'">
-                                                        <div
-                                                            class="bg-amber-500/10 border-l-4 border-amber-500 p-5 rounded-r-lg">
-                                                            <h4 class="text-amber-400 font-bold mb-1 text-sm"
-                                                                x-text="section.title"></h4>
-                                                            <p class="text-amber-200/80 text-sm leading-relaxed"
-                                                                x-text="section.text"></p>
-                                                        </div>
-                                                    </template>
-                                                </div>
-                                            </template>
-                                        </div>
-
-                                        <!-- Code Samples -->
-                                        <div class="mt-16 space-y-8" id="section-code">
-                                            <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
-                                                <svg class="w-6 h-6 text-sky-500" fill="none" stroke="currentColor"
-                                                    viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-                                                </svg>
-                                                Ví dụ thực hành
-                                            </h2>
-                                            <template x-for="sample in activeSessionData.content.code_samples"
-                                                :key="sample.file">
-                                                <div
-                                                    class="rounded-xl overflow-hidden border border-slate-700 shadow-2xl">
-                                                    <div
-                                                        class="bg-slate-800 px-4 py-2 flex items-center justify-between border-b border-slate-700">
-                                                        <div class="flex items-center gap-2">
-                                                            <div class="w-3 h-3 rounded-full bg-red-500/50"></div>
-                                                            <div class="w-3 h-3 rounded-full bg-amber-500/50"></div>
-                                                            <div class="w-3 h-3 rounded-full bg-green-500/50"></div>
-                                                            <span class="ml-2 text-xs font-mono text-slate-400"
-                                                                x-text="sample.file"></span>
-                                                        </div>
-                                                        <button @click="copyToClipboard(sample.code)"
-                                                            class="text-[10px] text-sky-400 hover:text-sky-300 uppercase tracking-widest font-bold">Copy</button>
-                                                    </div>
-                                                    <pre
-                                                        class="p-6 bg-[#0d1117] overflow-x-auto"><code class="code-font text-sm text-sky-300 leading-relaxed" x-text="sample.code"></code></pre>
-                                                </div>
-                                            </template>
-                                        </div>
-
-                                        <!-- Exercises -->
-                                        <div class="mt-16 mb-20" id="section-exercises">
-                                            <h2 class="text-2xl font-bold text-white mb-6">Thực hành & Tư duy</h2>
-                                            <div class="grid gap-6">
-                                                <template x-for="(ex, index) in activeSessionData.content.exercises"
-                                                    :key="ex.title">
-                                                    <div
-                                                        class="surface p-6 rounded-xl border-slate-700/50 hover:border-sky-500/30 transition-all">
-                                                        <div class="flex items-center gap-3 mb-4">
-                                                            <span
-                                                                class="w-6 h-6 rounded-full bg-sky-500 text-white flex items-center justify-center text-xs font-bold"
-                                                                x-text="index + 1"></span>
-                                                            <h4 class="font-bold text-slate-200" x-text="ex.title"></h4>
-                                                        </div>
-                                                        <p class="text-slate-400 text-sm mb-4 leading-relaxed"
-                                                            x-text="ex.desc"></p>
-                                                        <div x-data="{ open: false }">
-                                                            <button @click="open = !open"
-                                                                class="text-xs text-sky-500/80 hover:text-sky-400 underline underline-offset-4">Xem
-                                                                gợi ý</button>
-                                                            <div x-show="open" x-cloak
-                                                                class="mt-3 p-4 bg-slate-800/50 rounded text-xs text-slate-300 italic"
-                                                                x-text="ex.hint"></div>
-                                                        </div>
-                                                    </div>
-                                                </template>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </article>
-
-                                <!-- Table of Contents (Right Side) -->
-                                <aside class="w-64 hidden xl:block">
-                                    <div class="surface p-6 rounded-xl border-slate-700/50 sticky top-0">
-                                        <h4 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">Mục
-                                            lục bài viết</h4>
-                                        <ul class="space-y-3">
-                                            <template x-for="(section, index) in activeSessionData.content.theory"
-                                                :key="index">
-                                                <li>
-                                                    <a :href="'#section-' + index"
-                                                        class="text-sm text-slate-400 hover:text-sky-400 transition-colors block py-1 border-l-2 border-transparent pl-4"
-                                                        x-text="section.title"></a>
-                                                </li>
-                                            </template>
-                                            <li><a href="#section-code"
-                                                    class="text-sm text-slate-400 hover:text-sky-400 transition-colors block py-1 border-l-2 border-transparent pl-4">Ví
-                                                    dụ thực hành</a></li>
-                                            <li><a href="#section-exercises"
-                                                    class="text-sm text-slate-400 hover:text-sky-400 transition-colors block py-1 border-l-2 border-transparent pl-4">Bài
-                                                    tập thực hành</a></li>
-                                        </ul>
-                                    </div>
-                                </aside>
-                            </div>
-                        </template>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Git Tracker Page -->
-            <div x-show="currentTab === 'git'" class="max-w-6xl mx-auto py-8 px-4" x-cloak>
-                <div class="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-6">
-                    <div>
-                        <h2 class="text-4xl font-extrabold text-white mb-3 tracking-tight">Git Activity Tracker</h2>
-                        <p class="text-slate-400 text-lg">Theo dõi lịch sử phát triển và quy trình quản lý mã nguồn
-                            chuẩn Senior</p>
-                    </div>
-                    <div class="flex flex-wrap gap-4">
-                        <div class="surface px-5 py-3 rounded-xl border border-slate-700/50 shadow-lg bg-slate-800/20">
-                            <span
-                                class="text-[10px] text-slate-500 block uppercase font-black tracking-widest mb-1">Repository</span>
-                            <div class="flex items-center gap-2">
-                                <div class="w-2 h-2 rounded-full bg-sky-500 animate-pulse"></div>
-                                <span class="text-sky-400 font-mono font-bold" x-text="gitConfig.repo"></span>
-                            </div>
-                        </div>
-                        <div class="surface px-5 py-3 rounded-xl border border-slate-700/50 shadow-lg bg-slate-800/20">
-                            <span
-                                class="text-[10px] text-slate-500 block uppercase font-black tracking-widest mb-1">Developer</span>
-                            <span class="text-emerald-400 font-mono font-bold" x-text="gitConfig.username"></span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
-                    <!-- Left: Commit History -->
-                    <div class="lg:col-span-2 space-y-8">
-                        <div class="surface rounded-2xl border border-slate-700/50 overflow-hidden shadow-2xl">
-                            <div
-                                class="bg-slate-800/80 px-8 py-5 border-b border-slate-700/50 flex justify-between items-center">
-                                <h3 class="font-bold text-lg flex items-center gap-3 text-white">
-                                    <svg class="w-6 h-6 text-sky-500" fill="currentColor" viewBox="0 0 24 24">
-                                        <path
-                                            d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.341-3.369-1.341-.454-1.152-1.11-1.459-1.11-1.459-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12c0-5.523-4.477-10-10-10z" />
-                                    </svg>
-                                    Lịch sử Commit
-                                </h3>
-                                <div class="flex items-center gap-4">
-                                    <span
-                                        class="text-xs text-slate-500 font-mono bg-slate-900/50 px-3 py-1 rounded-full border border-slate-700/50"
-                                        x-text="commits.length + ' commits total'"></span>
-                                </div>
-                            </div>
-                            <div class="divide-y divide-slate-700/30 bg-slate-900/20">
-                                <template x-for="commit in commits" :key="commit.sha">
-                                    <div class="px-8 py-6 hover:bg-slate-800/40 transition-all cursor-default group">
-                                        <div class="flex items-center justify-between mb-3">
-                                            <div class="flex items-center gap-4">
-                                                <span :class="{
-                                                    'bg-emerald-500/20 text-emerald-400 border-emerald-500/30': commit.type === 'feat',
-                                                    'bg-rose-500/20 text-rose-400 border-rose-500/30': commit.type === 'fix',
-                                                    'bg-sky-500/20 text-sky-400 border-sky-500/30': commit.type === 'docs',
-                                                    'bg-slate-500/20 text-slate-400 border-slate-500/30': commit.type === 'chore'
-                                                }" class="text-[10px] uppercase font-black px-2.5 py-1 rounded border tracking-wider"
-                                                    x-text="commit.type"></span>
-                                                <span
-                                                    class="text-slate-100 font-semibold text-base group-hover:text-sky-400 transition-colors leading-tight"
-                                                    x-text="commit.message"></span>
-                                            </div>
-                                            <span class="text-xs text-slate-500 font-mono whitespace-nowrap ml-4"
-                                                x-text="formatDate(commit.date)"></span>
-                                        </div>
-                                        <div class="flex items-center gap-6 mt-3 pl-1">
-                                            <div class="flex items-center gap-2">
-                                                <span
-                                                    class="text-[10px] text-slate-500 uppercase font-black tracking-widest">Status</span>
-                                                <div class="flex items-center gap-1.5">
-                                                    <div :class="commit.isValid ? 'bg-emerald-500' : 'bg-rose-500'"
-                                                        class="w-1.5 h-1.5 rounded-full shadow-[0_0_8px_rgba(0,0,0,0.5)]">
-                                                    </div>
-                                                    <span :class="commit.isValid ? 'text-emerald-400' : 'text-rose-400'"
-                                                        class="text-[11px] font-bold"
-                                                        x-text="commit.isValid ? 'Valid Format' : 'Invalid Format'"></span>
-                                                </div>
-                                            </div>
-                                            <div class="flex items-center gap-2">
-                                                <span
-                                                    class="text-[10px] text-slate-500 uppercase font-black tracking-widest">Hash</span>
-                                                <span
-                                                    class="text-[11px] text-slate-400 font-mono bg-slate-800/50 px-2 py-0.5 rounded border border-slate-700/30"
-                                                    x-text="commit.sha.substring(0,7)"></span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </template>
-                                <template x-if="commits.length === 0">
-                                    <div class="p-20 text-center">
-                                        <svg class="w-16 h-16 text-slate-700 mx-auto mb-4" fill="none"
-                                            stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                                d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
-                                        </svg>
-                                        <p class="text-slate-500">Chưa có dữ liệu commit. Hãy cấu hình GitHub trong phần
-                                            Settings.</p>
-                                    </div>
-                                </template>
-                            </div>
-                        </div>
-
-                        <!-- Git Best Practices -->
-                        <div
-                            class="surface p-8 rounded-2xl border border-slate-700/50 shadow-xl relative overflow-hidden">
-                            <div class="absolute top-0 right-0 p-8 opacity-5">
-                                <svg class="w-32 h-32" fill="currentColor" viewBox="0 0 24 24">
-                                    <path
-                                        d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.341-3.369-1.341-.454-1.152-1.11-1.459-1.11-1.459-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12c0-5.523-4.477-10-10-10z" />
-                                </svg>
-                            </div>
-                            <h3 class="text-2xl font-bold text-white mb-8 flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center">
-                                    <svg class="w-6 h-6 text-emerald-500" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                    </svg>
-                                </div>
-                                Quy trình Git chuẩn (Senior Flow)
-                            </h3>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
-                                <div class="space-y-5">
-                                    <h4 class="text-xs font-black text-sky-400 uppercase tracking-[0.2em]">Conventional
-                                        Commits</h4>
-                                    <ul class="space-y-4">
-                                        <li class="flex items-start gap-3 group">
-                                            <div
-                                                class="mt-1 w-5 h-5 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0 group-hover:bg-emerald-500/20 transition-colors">
-                                                <span class="text-emerald-500 text-xs font-bold">✓</span>
-                                            </div>
-                                            <div class="text-sm">
-                                                <span class="text-slate-200 font-bold block mb-1">Cấu trúc chuẩn:</span>
-                                                <code
-                                                    class="text-sky-300 bg-sky-950/30 px-2 py-0.5 rounded text-[11px]">type(scope): description</code>
-                                            </div>
-                                        </li>
-                                        <li class="flex items-start gap-3 group">
-                                            <div
-                                                class="mt-1 w-5 h-5 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0 group-hover:bg-emerald-500/20 transition-colors">
-                                                <span class="text-emerald-500 text-xs font-bold">✓</span>
-                                            </div>
-                                            <div class="text-sm">
-                                                <span class="text-slate-200 font-bold block mb-1">Types phổ biến:</span>
-                                                <p class="text-slate-400 leading-relaxed text-xs"><strong>feat</strong>
-                                                    (tính năng), <strong>fix</strong> (sửa lỗi), <strong>docs</strong>
-                                                    (tài liệu), <strong>refactor</strong> (tối ưu).</p>
-                                            </div>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div class="space-y-5">
-                                    <h4 class="text-xs font-black text-sky-400 uppercase tracking-[0.2em]">Branching
-                                        Strategy</h4>
-                                    <ul class="space-y-4">
-                                        <li class="flex items-start gap-3 group">
-                                            <div
-                                                class="mt-1 w-5 h-5 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0 group-hover:bg-emerald-500/20 transition-colors">
-                                                <span class="text-emerald-500 text-xs font-bold">✓</span>
-                                            </div>
-                                            <div class="text-sm">
-                                                <span class="text-slate-200 font-bold block mb-1">Trunk-based
-                                                    Development:</span>
-                                                <p class="text-slate-400 leading-relaxed text-xs">Branch
-                                                    <strong>main</strong> luôn ở trạng thái "Deployable". Mọi thay đổi
-                                                    qua Pull Request.
-                                                </p>
-                                            </div>
-                                        </li>
-                                        <li class="flex items-start gap-3 group">
-                                            <div
-                                                class="mt-1 w-5 h-5 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0 group-hover:bg-emerald-500/20 transition-colors">
-                                                <span class="text-emerald-500 text-xs font-bold">✓</span>
-                                            </div>
-                                            <div class="text-sm">
-                                                <span class="text-slate-200 font-bold block mb-1">Feature
-                                                    Isolation:</span>
-                                                <p class="text-slate-400 leading-relaxed text-xs">Mỗi tính năng là một
-                                                    branch riêng biệt: <code
-                                                        class="text-emerald-400">feature/user-auth</code>.</p>
-                                            </div>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Git Flags & Options (Common -flags) -->
-                        <div class="surface p-8 rounded-2xl border border-slate-700/50 shadow-xl mt-8">
-                            <h3 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-xl bg-sky-500/20 flex items-center justify-center">
-                                    <svg class="w-6 h-6 text-sky-400" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
-                                    </svg>
-                                </div>
-                                Giải mã các Flags (Options) phổ biến
-                            </h3>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                <div class="space-y-6">
-                                    <div>
-                                        <h4 class="text-xs font-black text-sky-400 uppercase tracking-[0.2em] mb-3">Lệnh
-                                            checkout / switch</h4>
-                                        <ul class="space-y-3">
-                                            <li class="flex items-start gap-2">
-                                                <code
-                                                    class="text-emerald-400 bg-emerald-950/30 px-2 py-0.5 rounded text-[11px] font-bold">-b</code>
-                                                <span class="text-sm text-slate-400"><strong>Branch:</strong> Tạo nhánh
-                                                    mới và chuyển sang đó ngay lập tức.</span>
-                                            </li>
-                                            <li class="flex items-start gap-2">
-                                                <code
-                                                    class="text-emerald-400 bg-emerald-950/30 px-2 py-0.5 rounded text-[11px] font-bold">-c</code>
-                                                <span class="text-sm text-slate-400"><strong>Create:</strong> (Trong
-                                                    lệnh `git switch`) Tương đương `-b` của checkout.</span>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <div>
-                                        <h4 class="text-xs font-black text-sky-400 uppercase tracking-[0.2em] mb-3">Lệnh
-                                            commit</h4>
-                                        <ul class="space-y-3">
-                                            <li class="flex items-start gap-2">
-                                                <code
-                                                    class="text-emerald-400 bg-emerald-950/30 px-2 py-0.5 rounded text-[11px] font-bold">-m</code>
-                                                <span class="text-sm text-slate-400"><strong>Message:</strong> Viết nội
-                                                    dung commit trực tiếp trên terminal.</span>
-                                            </li>
-                                            <li class="flex items-start gap-2">
-                                                <code
-                                                    class="text-emerald-400 bg-emerald-950/30 px-2 py-0.5 rounded text-[11px] font-bold">-am</code>
-                                                <span class="text-sm text-slate-400"><strong>Add & Message:</strong> Vừa
-                                                    `add` (cho file đã track) vừa `commit` một lúc.</span>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="space-y-6">
-                                    <div>
-                                        <h4 class="text-xs font-black text-sky-400 uppercase tracking-[0.2em] mb-3">Lệnh
-                                            push / remote</h4>
-                                        <ul class="space-y-3">
-                                            <li class="flex items-start gap-2">
-                                                <code
-                                                    class="text-emerald-400 bg-emerald-950/30 px-2 py-0.5 rounded text-[11px] font-bold">-u</code>
-                                                <span class="text-sm text-slate-400"><strong>Upstream:</strong> Thiết
-                                                    lập mối quan hệ theo dõi giữa nhánh local và remote.</span>
-                                            </li>
-                                            <li class="flex items-start gap-2">
-                                                <code
-                                                    class="text-emerald-400 bg-emerald-950/30 px-2 py-0.5 rounded text-[11px] font-bold">-f</code>
-                                                <span class="text-sm text-rose-400"><strong>Force:</strong> Ép buộc đẩy
-                                                    code lên (CỰC KỲ NGUY HIỂM - Có thể ghi đè code của người
-                                                    khác).</span>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <div>
-                                        <h4 class="text-xs font-black text-sky-400 uppercase tracking-[0.2em] mb-3">Lệnh
-                                            branch</h4>
-                                        <ul class="space-y-3">
-                                            <li class="flex items-start gap-2">
-                                                <code
-                                                    class="text-emerald-400 bg-emerald-950/30 px-2 py-0.5 rounded text-[11px] font-bold">-d</code>
-                                                <span class="text-sm text-slate-400"><strong>Delete:</strong> Xóa một
-                                                    nhánh (chỉ xóa khi đã merge).</span>
-                                            </li>
-                                            <li class="flex items-start gap-2">
-                                                <code
-                                                    class="text-emerald-400 bg-emerald-950/30 px-2 py-0.5 rounded text-[11px] font-bold">-D</code>
-                                                <span class="text-sm text-rose-400"><strong>Force Delete:</strong> Xóa
-                                                    nhánh bất kể đã merge hay chưa.</span>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Right: Statistics & Guides -->
-                    <div class="space-y-8">
-                        <div
-                            class="surface p-8 rounded-2xl border border-slate-700/50 shadow-xl bg-gradient-to-b from-slate-800/20 to-transparent">
-                            <h3 class="font-bold text-lg mb-6 flex items-center gap-3 text-white">
-                                <div class="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center">
-                                    <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z">
-                                        </path>
-                                    </svg>
-                                </div>
-                                Thống kê đóng góp
-                            </h3>
-                            <div class="flex items-end gap-1.5 h-40 mb-8 px-2">
-                                <template x-for="i in 21">
-                                    <div class="flex-1 bg-slate-800/80 rounded-t-md hover:bg-sky-500 transition-all cursor-pointer relative group"
-                                        :style="`height: ${Math.floor(Math.random() * 70) + 30}%`">
-                                        <div
-                                            class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-slate-900 text-[10px] text-white rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 border border-slate-700 shadow-xl">
-                                            Day <span x-text="i"></span>: <span
-                                                x-text="Math.floor(Math.random() * 8) + 1"></span> commits
-                                        </div>
-                                    </div>
-                                </template>
-                            </div>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div
-                                    class="text-center p-5 bg-slate-800/40 rounded-2xl border border-slate-700/30 hover:border-emerald-500/30 transition-all">
-                                    <span class="block text-3xl font-black text-white mb-1">12</span>
-                                    <span class="text-[10px] text-slate-500 uppercase font-black tracking-widest">Day
-                                        Streak</span>
-                                </div>
-                                <div
-                                    class="text-center p-5 bg-slate-800/40 rounded-2xl border border-slate-700/30 hover:border-sky-500/30 transition-all">
-                                    <span class="block text-3xl font-black text-white mb-1"
-                                        x-text="commits.length"></span>
-                                    <span class="text-[10px] text-slate-500 uppercase font-black tracking-widest">Total
-                                        Commits</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div
-                            class="surface p-8 rounded-2xl border border-rose-500/20 bg-rose-500/5 relative overflow-hidden group">
-                            <div
-                                class="absolute -right-4 -bottom-4 opacity-5 group-hover:scale-110 transition-transform duration-500">
-                                <svg class="w-32 h-32 text-rose-500" fill="currentColor" viewBox="0 0 24 24">
-                                    <path
-                                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
-                                    </path>
-                                </svg>
-                            </div>
-                            <h4 class="font-bold text-rose-400 mb-4 flex items-center gap-2 text-lg">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                </svg>
-                                Pro-Tip: Git Clean Code
-                            </h4>
-                            <p class="text-sm text-rose-300/80 leading-relaxed italic relative z-10 font-medium">
-                                "Đừng bao giờ commit trực tiếp lên branch <strong>main</strong>. Luôn tạo Pull Request
-                                và yêu cầu ít nhất một lần review để bảo vệ chất lượng code cao nhất cho toàn dự án."
-                            </p>
-                        </div>
-
-                        <div class="surface p-8 rounded-2xl border border-slate-700/50 shadow-lg bg-slate-800/10">
-                            <h4 class="font-bold text-slate-300 mb-4 text-sm uppercase tracking-widest">Hữu ích</h4>
-                            <div class="space-y-4">
-                                <a href="https://conventionalcommits.org" target="_blank"
-                                    class="flex items-center justify-between group p-3 rounded-xl hover:bg-slate-800/50 transition-all border border-transparent hover:border-slate-700/50">
-                                    <span
-                                        class="text-sm text-slate-400 group-hover:text-white transition-colors">Conventional
-                                        Commits</span>
-                                    <svg class="w-4 h-4 text-slate-600 group-hover:text-sky-400 transition-all"
-                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 00-2 2v2a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14">
-                                        </path>
-                                    </svg>
-                                </a>
-                                <a href="https://git-scm.com/docs" target="_blank"
-                                    class="flex items-center justify-between group p-3 rounded-xl hover:bg-slate-800/50 transition-all border border-transparent hover:border-slate-700/50">
-                                    <span class="text-sm text-slate-400 group-hover:text-white transition-colors">Git
-                                        Documentation</span>
-                                    <svg class="w-4 h-4 text-slate-600 group-hover:text-sky-400 transition-all"
-                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 00-2 2v2a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14">
-                                        </path>
-                                    </svg>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
         </div>
     </main>
 
-    <script src="./docs_data.js"></script>
     <script>
         function cmsApp() {
             return {
@@ -926,18 +160,62 @@
                     { id: 1, text: 'Nâng cấp nội dung Docs chuyên sâu', time: 'Vừa xong' },
                     { id: 2, text: 'Khởi tạo Roadmap 8 tháng đầy đủ', time: '5 phút trước' }
                 ],
+                progress: {
+                    skills: { "Python": 3, "Logic": 2, "Git": 4, "Backend": 1 },
+                    milestones: [
+                        { id: 1, title: 'Hoàn thành Giai đoạn 1', deadline: '2024-04-20', completed: true },
+                        { id: 2, title: 'Project 1: CMS Dashboard', deadline: '2024-05-01', completed: false }
+                    ]
+                },
                 init() {
                     this.updateTime();
                     setInterval(() => this.updateTime(), 60000);
                     this.loadData();
-                    this.initChart();
 
-                    // Load Git config from localStorage
+                    // Client-side Router
+                    window.addEventListener('hashchange', () => this.handleRouting());
+                    this.handleRouting();
+                },
+                async handleRouting() {
+                    let hash = window.location.hash || '#/dashboard';
+                    const page = hash.replace('#/', '');
+                    this.currentTab = page;
+
+                    try {
+                        const response = await fetch(`./pages/${page}.html`);
+                        if (!response.ok) throw new Error('Page not found');
+                        const html = await response.text();
+
+                        const outlet = document.getElementById('router-outlet');
+                        outlet.innerHTML = html;
+
+                        // Re-initialize Alpine for new content
+                        this.$nextTick(() => {
+                            if (page === 'dashboard') this.initChart();
+                            if (page === 'git') this.initGitTracker();
+                            if (page === 'progress') this.loadProgress();
+                        });
+                    } catch (error) {
+                        document.getElementById('router-outlet').innerHTML = `<div class="text-rose-500 p-8 flex flex-col items-center justify-center h-full">
+                            <svg class="w-16 h-16 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                            <h3 class="text-xl font-bold">Lỗi tải trang</h3>
+                            <p class="text-slate-400 mt-2">${error.message}</p>
+                            <p class="text-xs text-slate-500 mt-4 italic">Lưu ý: Bạn cần chạy qua một web server (như Live Server hoặc python -m http.server) để tính năng Routing hoạt động.</p>
+                        </div>`;
+                    }
+                },
+                loadProgress() {
+                    const savedProgress = localStorage.getItem('cms_progress');
+                    if (savedProgress) {
+                        this.progress = JSON.parse(savedProgress);
+                    }
+                },
+                initGitTracker() {
                     const savedGit = localStorage.getItem('cms_git');
                     if (savedGit) {
                         const parsed = JSON.parse(savedGit);
                         this.gitTracker = parsed;
-                        this.gitConfig = { username: parsed.username, repo: parsed.repo }; // Hỗ trợ legacy
+                        this.gitConfig = { username: parsed.username, repo: parsed.repo };
                         if (this.gitTracker.username && this.gitTracker.repo && (!this.gitTracker.commits || this.gitTracker.commits.length === 0)) {
                             this.fetchCommits();
                         } else if (this.gitTracker.commits && this.gitTracker.commits.length > 0) {

@@ -122,93 +122,53 @@ const initialDocs = {
                 "id": "s03-functions",
                 "title": "Buổi 3: Hàm và Module chuyên sâu",
                 "content": {
-                    "intro": "Hàm trong Python không chỉ là một khối lệnh, nó là 'First-class citizen'. Điều này có nghĩa là hàm có thể được gán cho biến, truyền vào như tham số hoặc trả về từ một hàm khác.",
+                    "intro": "Hàm trong Python không chỉ là một khối lệnh, nó là 'First-class citizen'. Buổi này tập trung vào việc tổ chức code linh hoạt và xử lý file chuyên nghiệp.",
                     "theory": [
                         {
                             "type": "concept",
-                            "title": "1. Kiến thức Python: Hàm (Functions Deep Dive)",
-                            "text": "- **Cách sử dụng thực tế:** Chia nhỏ logic thành các hàm nhỏ (Single Responsibility). Sử dụng `*args` khi bạn không biết trước số lượng tham số, `**kwargs` khi cần cấu hình linh hoạt (vd: tham số cho database connection).\n- **Khi nào dùng:** Dùng `lambda` cho các hàm cực ngắn dùng một lần (vd: trong `map`, `filter`). Dùng `Closures` khi muốn tạo ra các hàm có 'trạng thái' riêng mà không cần dùng Class.\n- **Lưu ý quan trọng:** Tránh dùng **Mutable Default Arguments** (vd: `def func(a=[])`). Danh sách `[]` chỉ được tạo một lần duy nhất khi định nghĩa hàm, dẫn đến dữ liệu bị cộng dồn sai lệch giữa các lần gọi."
+                            "title": "1. Flexible Arguments (*args, **kwargs)",
+                            "text": "- `*args`: Nhận số lượng tham số không xác định dưới dạng **Tuple**. Dùng khi không biết trước có bao nhiêu giá trị truyền vào.\n- `**kwargs`: Nhận số lượng tham số có tên (keyword) dưới dạng **Dictionary**. Thường dùng cho các tham số cấu hình (options/metadata)."
                         },
                         {
                             "type": "concept",
-                            "title": "2. Kiến thức Python: Decorators",
-                            "text": "- **Cách sử dụng thực tế:** Dùng để tách biệt logic hệ thống (Logging, Auth, Cache) khỏi logic nghiệp vụ. Giúp code tuân thủ nguyên lý DRY (Don't Repeat Yourself).\n- **Khi nào dùng:** Dùng khi bạn thấy mình đang viết cùng một đoạn code kiểm tra (vd: check login) ở đầu nhiều hàm khác nhau.\n- **Lưu ý quan trọng:** Khi viết Decorator, hãy luôn dùng `@functools.wraps(func)` để giữ lại metadata của hàm gốc (vd: tên hàm, docstring) giúp việc debug dễ dàng hơn."
+                            "title": "2. Lambda & Higher-Order Functions",
+                            "text": "- `lambda`: Hàm ẩn danh, viết trên 1 dòng. Cú pháp: `lambda tham_so: bieu_thuc`.\n- Thường dùng làm tham số cho các hàm như `sort()`, `map()`, `filter()` để xử lý dữ liệu nhanh."
                         },
                         {
-                            "type": "case_study",
-                            "title": "4. Ứng dụng thực tế: Logging & Authentication",
-                            "text": "Thay vì viết code kiểm tra quyền truy cập lặp đi lặp lại ở mọi hàm (Boilerplate code), bạn chỉ cần định nghĩa một `@require_auth` decorator. Khi áp dụng vào FastAPI, điều này giúp tách biệt hoàn toàn Logic nghiệp vụ và Logic hệ thống, giống như cách Aspect-Oriented Programming (AOP) hoạt động trong Spring Framework."
-                        },
-                        {
-                            "type": "compare",
-                            "title": "3. So sánh Python vs Java: Functions",
-                            "items": [
-                                { "label": "Khai báo", "python": "def name(): (Linh hoạt)", "java": "public void name() { (Chặt chẽ trong class)" },
-                                { "label": "Tham số", "python": "*args, **kwargs (Vô hạn)", "java": "Varargs (Type... args)" },
-                                { "label": "Tính chất", "python": "First-class citizen (Object)", "java": "Method (Gắn liền với class/object)" },
-                                { "label": "Overloading", "python": "Không hỗ trợ trực tiếp (Dùng tham số mặc định)", "java": "Hỗ trợ mạnh mẽ (Cùng tên khác signature)" }
-                            ]
-                        }
-                    ],
-                    "code_samples": [
-                        {
-                            "file": "decorators_demo.py",
-                            "language": "python",
-                            "code": "import time\nfrom functools import wraps\n\n# 1. Định nghĩa Decorator tính thời gian chạy (giống AOP trong Java)\ndef timer(func):\n    @wraps(func) # Giữ lại metadata (tên hàm, docstring) của hàm gốc\n    def wrapper(*args, **kwargs):\n        start = time.time() # Lấy thời gian hiện tại\n        result = func(*args, **kwargs) # Thực thi hàm chính\n        end = time.time()\n        print(f'Hàm {func.__name__} chạy mất: {end - start:.4f}s')\n        return result # Trả về kết quả cho caller\n    return wrapper\n\n# 2. Sử dụng Decorator với cú pháp @ (Syntactic Sugar)\n@timer\ndef heavy_task(n: int):\n    \"\"\"Giả lập một tác vụ tốn thời gian\"\"\"\n    time.sleep(n)\n    return f'Đã xong task {n}'\n\n# 3. Gọi hàm như bình thường, logic timer tự động được nhúng vào\nprint(heavy_task(1))"
+                            "type": "concept",
+                            "title": "3. Xử lý File & Context Manager",
+                            "text": "- Luôn sử dụng `with open(...) as f:` để đảm bảo file được đóng tự động (an toàn tài nguyên).\n- Các chế độ mở file: `'r'` (đọc), `'w'` (ghi đè), `'a'` (ghi tiếp vào cuối)."
                         }
                     ],
                     "exercises": [
                         {
-                            "title": "Bài tập 1: Xây dựng Decorator",
-                            "desc": "Viết một decorator `@timer` để tính thời gian thực thi của một hàm bất kỳ.",
-                            "hint": "Sử dụng module `time` và tính hiệu `time.time()` trước và sau khi gọi hàm."
+                            "title": "Thử thách 1: Hệ thống hóa đơn linh hoạt",
+                            "desc": "Xây dựng hàm `calculate_invoice(customer_name, *prices, **details)`. Tính tổng tiền và in kèm thông tin khách hàng, ngày tháng.",
+                            "hint": "Dùng `sum(prices)` để tính tổng tuple, dùng `details.items()` để duyệt dictionary."
+                        },
+                        {
+                            "title": "Thử thách 2: Sắp xếp sản phẩm thông minh",
+                            "desc": "Cho list `products = [('Laptop', 1500), ('Mouse', 25)]`. Hãy sắp xếp list này theo giá tăng dần bằng lambda.",
+                            "hint": "Sử dụng `list.sort(key=...)` hoặc `sorted(list, key=...)`."
                         }
                     ]
                 }
             },
             {
-                "id": "s04-files",
-                "title": "Buổi 4: Xử lý Exception & Resource",
+                "id": "s04-git-exceptions",
+                "title": "Buổi 4: Git Workflow Pro & Exception Handling",
                 "content": {
-                    "intro": "Lỗi là một phần tất yếu của lập trình. Python cung cấp cơ chế xử lý lỗi tinh tế và cách quản lý tài nguyên (file, connection) an toàn thông qua Context Managers.",
+                    "intro": "Làm chủ quy trình Git thực tế và kỹ thuật xử lý lỗi 'Production-ready'.",
                     "theory": [
                         {
                             "type": "concept",
-                            "title": "1. Kiến thức Python: Exception Handling",
-                            "text": "Cơ chế `try-except-else-finally` giúp quản lý luồng chương trình khi gặp sự cố.\n- **else:** Chạy khi KHÔNG có exception xảy ra.\n- **finally:** Luôn luôn chạy, thường dùng để dọn dẹp tài nguyên."
+                            "title": "1. Git Workflow: Các tình huống ngoại lệ",
+                            "text": "- **Conflict (Xung đột)**: Xảy ra khi 2 người cùng sửa 1 dòng code. Cách xử lý: `git pull`, mở file bị lỗi, chọn code đúng, sau đó `add` và `commit` lại.\n- **Undo Commit**: Nếu lỡ commit sai, dùng `git reset --soft HEAD~1` để giữ lại code nhưng hủy commit.\n- **Stash**: Khi đang làm dở mà phải chuyển sang nhánh khác gấp, dùng `git stash` để tạm cất code."
                         },
                         {
                             "type": "concept",
-                            "title": "2. Kiến thức Python: Context Managers (Câu lệnh with)",
-                            "text": "Câu lệnh `with` giúp quản lý tài nguyên một cách tự động. Khi kết thúc block `with`, tài nguyên (như file) sẽ tự động được đóng, ngay cả khi có lỗi xảy ra. Đây là best practice thay vì đóng thủ công."
-                        },
-                        {
-                            "type": "case_study",
-                            "title": "4. Ứng dụng thực tế: Chống rò rỉ bộ nhớ (Memory Leak)",
-                            "text": "Trong các hệ thống lớn chạy 24/7, việc quên đóng File hay Database Connection là thảm họa. Câu lệnh `with` đảm bảo tài nguyên luôn được giải phóng (Deterministic cleanup), khác với việc chờ Garbage Collector dọn dẹp một cách ngẫu nhiên. Đây là nền tảng để viết code Backend 'Production-ready'."
-                        },
-                        {
-                            "type": "compare",
-                            "title": "3. So sánh Python vs Java: Error Handling",
-                            "items": [
-                                { "label": "Cú pháp", "python": "try-except-else-finally", "java": "try-catch-finally" },
-                                { "label": "Quản lý tài nguyên", "python": "Câu lệnh 'with' (Cực gọn)", "java": "Try-with-resources (Java 7+)" },
-                                { "label": "Ném lỗi", "python": "raise ValueError('msg')", "java": "throw new ValueError('msg');" }
-                            ]
-                        }
-                    ],
-                    "code_samples": [
-                        {
-                            "file": "context_manager_pro.py",
-                            "language": "python",
-                            "code": "import os\n\n# 1. Cách làm an toàn (Best Practice): Sử dụng 'with' (Context Manager)\ndef read_config(file_path: str):\n    if not os.path.exists(file_path):\n        raise FileNotFoundError(f\"Không tìm thấy file: {file_path}\")\n\n    # 'with' tự động gọi f.close() kể cả khi có lỗi xảy ra bên trong block\n    with open(file_path, 'r', encoding='utf-8') as f:\n        return f.read()\n\n# 2. Luồng xử lý lỗi đầy đủ: try-except-else-finally\ntry:\n    content = read_config('config.json')\nexcept FileNotFoundError as e:\n    print(f\"Lỗi hệ thống: {e}\") # Xử lý lỗi cụ thể\nexcept Exception as e:\n    print(f\"Lỗi không xác định: {e}\") # Xử lý các lỗi khác\nelse:\n    print(\"Đọc file thành công, không có lỗi nào xảy ra.\")\nfinally:\n    print(\"Thao tác kết thúc (Luôn luôn chạy để dọn dẹp).\")"
-                        }
-                    ],
-                    "exercises": [
-                        {
-                            "title": "Bài tập 1: Đọc file an toàn",
-                            "desc": "Viết chương trình yêu cầu nhập tên file, nếu file không tồn tại thì in ra cảnh báo và cho phép nhập lại thay vì dừng chương trình.",
-                            "hint": "Dùng vòng lặp while kết hợp try-except."
+                            "title": "2. Exception Handling chuyên sâu",
+                            "text": "- `try...except...else...finally`: \n    * `except`: Xử lý lỗi cụ thể (nên tránh dùng `except Exception:` chung chung).\n    * `else`: Chạy khi **không** có lỗi.\n    * `finally`: Luôn chạy (dùng để đóng DB, đóng File).\n- `raise`: Chủ động ném lỗi khi dữ liệu không hợp lệ."
                         }
                     ]
                 }

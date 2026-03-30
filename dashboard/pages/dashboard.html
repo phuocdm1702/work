@@ -1,0 +1,51 @@
+<div class="space-y-8" x-cloak>
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <template x-for="stat in stats" :key="stat.label">
+            <div class="surface p-6 rounded-xl">
+                <div class="text-slate-400 text-sm mb-1" x-text="stat.label"></div>
+                <div class="text-2xl font-bold text-sky-400" x-text="stat.value"></div>
+            </div>
+        </template>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="surface p-6 rounded-xl">
+            <h3 class="font-bold mb-4">Tiến độ theo giai đoạn</h3>
+            <canvas id="progressChart" height="200"></canvas>
+        </div>
+        <div class="surface p-6 rounded-xl">
+            <h3 class="font-bold mb-4">Hoạt động gần đây</h3>
+            <div class="space-y-4">
+                <template x-for="act in recentActivity" :key="act.id">
+                    <div class="flex items-start gap-4">
+                        <template x-if="act.type === 'case_study'">
+                            <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6 dark:bg-blue-900/20 w-full">
+                                <div class="flex items-center mb-2">
+                                    <svg class="w-5 h-5 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                    </svg>
+                                    <h4 class="font-bold text-blue-800 dark:text-blue-300" x-text="act.title"></h4>
+                                </div>
+                                <p class="text-blue-700 dark:text-blue-200 leading-relaxed" x-text="act.text"></p>
+                            </div>
+                        </template>
+
+                        <template x-if="act.type === 'concept'">
+                            <div class="mb-8 w-full">
+                                <h4 class="text-xl font-bold text-slate-800 dark:text-white mb-3 flex items-center">
+                                    <span class="w-2 h-6 bg-indigo-500 rounded mr-3"></span>
+                                    <span x-text="act.title"></span>
+                                </h4>
+                                <div class="prose dark:prose-invert max-w-none">
+                                    <p class="text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-line"
+                                        x-html="act.text.replace(/\*\*(.*?)\*\*/g, '<strong class=\'text-indigo-600 dark:text-indigo-400\'>$1</strong>')">
+                                    </p>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </div>
+</div>
