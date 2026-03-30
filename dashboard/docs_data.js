@@ -127,29 +127,66 @@ const initialDocs = {
                         {
                             "type": "concept",
                             "title": "1. Flexible Arguments (*args, **kwargs)",
-                            "text": "- `*args`: Nhận số lượng tham số không xác định dưới dạng **Tuple**. Dùng khi không biết trước có bao nhiêu giá trị truyền vào.\n- `**kwargs`: Nhận số lượng tham số có tên (keyword) dưới dạng **Dictionary**. Thường dùng cho các tham số cấu hình (options/metadata)."
+                            "text": "- `*args`: Nhận số lượng tham số không xác định dưới dạng **Tuple**. Dùng khi không biết trước có bao nhiêu giá trị truyền vào.\n- `**kwargs`: Nhận số lượng tham số có tên (keyword) dưới dạng **Dictionary**. Thường dùng cho các tham số cấu hình (options/metadata).\n\n**Tại sao dùng Tuple cho *args?** Tuple là immutable, tạo nhanh hơn và tiết kiệm bộ nhớ hơn list khi chỉ cần đọc dữ liệu."
                         },
                         {
                             "type": "concept",
-                            "title": "2. Lambda & Higher-Order Functions",
-                            "text": "- `lambda`: Hàm ẩn danh, viết trên 1 dòng. Cú pháp: `lambda tham_so: bieu_thuc`.\n- Thường dùng làm tham số cho các hàm như `sort()`, `map()`, `filter()` để xử lý dữ liệu nhanh."
+                            "title": "2. Type Hints & Docstrings chuẩn Google",
+                            "text": "- **Type Hints**: Gợi ý kiểu dữ liệu với cú pháp `def func(name: str) -> int:`. Python không enforce nhưng IDE sẽ warning. Dùng `from typing import List, Dict, Union, Optional` cho complex types.\n- **Docstring Google Style**: Cấu trúc gồm 3 phần chính:\n    * `Args`: Mô tả từng tham số và kiểu dữ liệu\n    * `Returns`: Mô tả giá trị trả về\n    * `Raises`: Các exception có thể ném ra\n- Dùng triple quotes `\"\"\"` và để ý indentation để render đẹp trong IDE."
                         },
                         {
                             "type": "concept",
-                            "title": "3. Xử lý File & Context Manager",
-                            "text": "- Luôn sử dụng `with open(...) as f:` để đảm bảo file được đóng tự động (an toàn tài nguyên).\n- Các chế độ mở file: `'r'` (đọc), `'w'` (ghi đè), `'a'` (ghi tiếp vào cuối)."
+                            "title": "3. Lambda & Higher-Order Functions",
+                            "text": "- `lambda`: Hàm ẩn danh, viết trên 1 dòng. Cú pháp: `lambda tham_so: bieu_thuc`.\n- Thường dùng làm tham số cho các hàm như `sort()`, `map()`, `filter()` để xử lý dữ liệu nhanh.\n\n**Ví dụ sort với key:**\n```python\nstudents.sort(key=lambda s: s['score'], reverse=True)\n```\nLambda ở đây nhận dict `s`, trả về giá trị `score` để sort theo field này."
+                        },
+                        {
+                            "type": "concept",
+                            "title": "4. Module Pattern: if __name__ == \"__main__\"",
+                            "text": "- **Mục đích**: Cho phép file vừa là module (được import), vừa là script standalone (chạy trực tiếp).\n- **Cơ chế**: Biến `__name__` được Python set thành `'__main__'` khi file chạy trực tiếp. Khi import, `__name__` là tên module.\n- **Lợi ích**: Code trong block `if __name__ == '__main__':` chỉ chạy khi test file, không chạy khi file được import bởi module khác."
+                        },
+                        {
+                            "type": "concept",
+                            "title": "5. Xử lý File & Context Manager",
+                            "text": "- **Luôn dùng `with open(...)`**: Đảm bảo file được đóng tự động ngay cả khi có exception (tương đương try-finally nhưng gọn hơn).\n- **Các chế độ mở file**: `'r'` (read), `'w'` (write - ghi đè), `'a'` (append - ghi tiếp), `'x'` (exclusive - lỗi nếu file tồn tại), `'b'` (binary), `'+'` (read+write).\n- **pathlib (Python 3.4+)**: Thay thế `os.path`. Hỗ trợ method chaining, tự động xử lý `/` và `\\` trên các OS khác nhau."
+                        },
+                        {
+                            "type": "concept",
+                            "title": "6. JSON & CSV Module",
+                            "text": "- **JSON**: `json.dump(obj, file)` - ghi object vào file; `json.load(file)` - đọc từ file; `json.dumps(obj)` - trả về string. Dùng `ensure_ascii=False` để hỗ trợ Unicode.\n- **CSV**: `csv.DictReader` đọc file thành list dict (dùng header làm key); `csv.DictWriter` ghi dict ra file. Lưu ý `newline=''` khi open file CSV trên Windows."
+                        },
+                    ],
+                    "code_samples": [
+                        {
+                            "file": "functions_advanced.py",
+                            "language": "python",
+                            "code": "from typing import Union, List, Dict, Any\n\n# 1. *args - Nhận số lượng tham số động\ndef calculate_stats(*numbers: Union[int, float]) -> dict:\n    \"\"\"Tính thống kê từ dãy số. *args nhận tuple.\"\"\"\n    if not numbers:\n        raise ValueError('Cần ít nhất một số')\n    \n    return {\n        'sum': sum(numbers),\n        'avg': sum(numbers) / len(numbers),\n        'min': min(numbers),\n        'max': max(numbers),\n        'count': len(numbers)\n    }\n\n# Test: calculate_stats(10, 20, 30, 40, 50)\n# Result: {'sum': 150, 'avg': 30.0, 'min': 10, 'max': 50, 'count': 5}\n\n# 2. Type Hints với nested types\ndef process_user_data(users: List[Dict[str, Any]]) -> Dict[str, Any]:\n    \"\"\"\n    Phân tích danh sách users với đầy đủ type hints.\n    \n    Args:\n        users: List các dict có 'name' và 'age'\n    \n    Returns:\n        Dict chứa thống kê: total_users, avg_age, adults_count\n    \"\"\"\n    ages = [user['age'] for user in users]  # List comprehension\n    \n    # zip() kết hợp 2 list thành tuples\n    oldest = max(zip([u['name'] for u in users], ages), key=lambda x: x[1])\n    \n    return {\n        'total_users': len(users),\n        'avg_age': round(sum(ages) / len(ages), 1),\n        'adults_count': sum(1 for age in ages if age >= 18),\n        'oldest_user': oldest[0]\n    }"
+                        },
+                        {
+                            "file": "modules_file_handling.py",
+                            "language": "python",
+                            "code": "import json\nimport csv\nfrom pathlib import Path\n\n# 1. Module pattern với if __name__ == '__main__'\ndef save_to_json(data, filename: str):\n    \"\"\"Lưu data vào JSON file.\"\"\"\n    filepath = Path(filename)\n    filepath.parent.mkdir(parents=True, exist_ok=True)\n    \n    # Context manager - tự động đóng file\n    with open(filepath, 'w', encoding='utf-8') as f:\n        json.dump(data, f, ensure_ascii=False, indent=2)\n    return filepath\n\n# 2. CSV DictReader\ndef read_students_from_csv(csv_path: str):\n    \"\"\"Đọc CSV thành list dict với header làm key.\"\"\"\n    students = []\n    with open(Path(csv_path), 'r', encoding='utf-8', newline='') as f:\n        reader = csv.DictReader(f)\n        for row in reader:\n            row['score'] = int(row['score'])  # Cast string to int\n            students.append(dict(row))\n    return students\n\n# 3. Filter + Sort với lambda\ndef filter_passed_students(students, passing_score=50):\n    \"\"\"Lọc students đạt và sắp xếp theo score giảm dần.\"\"\"\n    passed = [s for s in students if s['score'] >= passing_score]\n    passed.sort(key=lambda s: s['score'], reverse=True)\n    return passed\n\n# BLOCK CHỈ CHẠY KHI FILE ĐƯỢC EXECUTE TRỰC TIẾP\nif __name__ == '__main__':\n    # Test code ở đây - không chạy khi file được import\n    test_data = {'course': 'Python', 'lesson': 3}\n    save_to_json(test_data, 'test.json')\n    print('Test completed!')"
                         }
                     ],
                     "exercises": [
                         {
-                            "title": "Thử thách 1: Hệ thống hóa đơn linh hoạt",
-                            "desc": "Xây dựng hàm `calculate_invoice(customer_name, *prices, **details)`. Tính tổng tiền và in kèm thông tin khách hàng, ngày tháng.",
-                            "hint": "Dùng `sum(prices)` để tính tổng tuple, dùng `details.items()` để duyệt dictionary."
+                            "title": "Thử thách 1: Hàm thống kê linh hoạt",
+                            "desc": "Viết hàm `calculate_stats(*numbers)` nhận số lượng số bất kỳ, trả về dict chứa: sum, average, min, max. Dùng Type Hints đầy đủ và docstring chuẩn Google.",
+                            "hint": "Dùng `*numbers` để bắt args động. Built-in `sum()`, `min()`, `max()` đã sẵn có. Check `if numbers` tránh chia 0."
                         },
                         {
-                            "title": "Thử thách 2: Sắp xếp sản phẩm thông minh",
-                            "desc": "Cho list `products = [('Laptop', 1500), ('Mouse', 25)]`. Hãy sắp xếp list này theo giá tăng dần bằng lambda.",
-                            "hint": "Sử dụng `list.sort(key=...)` hoặc `sorted(list, key=...)`."
+                            "title": "Thử thách 2: Xử lý dữ liệu người dùng",
+                            "desc": "Viết hàm `process_user_data(users: list[dict]) -> dict` với docstring chuẩn Google. Hàm nhận list user dict (mỗi user có `name`, `age`), trả về thống kê. Dùng list comprehension để extract ages.",
+                            "hint": "Dùng `zip(names, ages)` kết hợp với `max(key=lambda...)` để tìm người lớn tuổi nhất. Generator `sum(1 for ...)` để đếm adults."
+                        },
+                        {
+                            "title": "Thử thách 3: Module utils.py",
+                            "desc": "Tạo file `utils.py` với hàm `save_to_json(data, filename)` và `load_from_json(filename)`. File này vừa là module vừa có thể test standalone với block `if __name__ == '__main__':`. Dùng `pathlib.Path` cho paths.",
+                            "hint": "Dùng `path.parent.mkdir(parents=True)` để tạo thư mục. Context manager `with open(...) as f:` để đảm bảo file đóng. Test trong `__main__` block."
+                        },
+                        {
+                            "title": "Thử thách 4: CSV to JSON Pipeline",
+                            "desc": "Viết script đọc file CSV chứa danh sách học viên (`name,score`), xuất ra file JSON chỉ chứa học viên đạt (score >= 50). Dùng `csv.DictReader`, filter bằng list comprehension, sort bằng lambda.",
+                            "hint": "`csv.DictReader` trả về dict với header làm key. Score đọc từ CSV là string - cần `int()`. Dùng hàm từ phần 3 để save JSON."
                         }
                     ]
                 }
