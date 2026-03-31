@@ -1,0 +1,15 @@
+2026-03-31 12:02:52,572 - INFO - B\u1eaft \u0111\u1ea7u x\u1eed lý danh sách 4 phép tính.
+2026-03-31 12:02:52,572 - INFO - Phép tính #1: (10, 2)
+2026-03-31 12:02:52,572 - INFO - Phép chia thành công: 10 / 2 = 5.0
+2026-03-31 12:02:52,572 - INFO - Hoàn thành m\u1ed9t l\u01b0\u1ee3t x\u1eed lý chia.
+2026-03-31 12:02:52,572 - INFO - Phép tính #2: (5, 0)
+2026-03-31 12:02:52,572 - ERROR - L\u1ed7i: Không th\u1ec3 chia cho 0
+2026-03-31 12:02:52,572 - INFO - Hoàn thành m\u1ed9t l\u01b0\u1ee3t x\u1eed lý chia.
+2026-03-31 12:02:52,572 - INFO - Phép tính #3: ('abc', 5)
+2026-03-31 12:02:52,572 - ERROR - L\u1ed7i: Sai ki\u1ec3u d\u1eef li\u1ec7u gi\u1eefa <class 'str'> và <class 'int'>
+2026-03-31 12:02:52,572 - INFO - Hoàn thành m\u1ed9t l\u01b0\u1ee3t x\u1eed lý chia.
+2026-03-31 12:02:52,581 - INFO - Phép tính #4: (20, 4)
+2026-03-31 12:02:52,582 - INFO - Phép chia thành công: 20 / 4 = 5.0
+2026-03-31 12:02:52,582 - INFO - Hoàn thành m\u1ed9t l\u01b0\u1ee3t x\u1eed lý chia.
+2026-03-31 12:02:52,582 - INFO - K\u1ebft thúc x\u1eed lý danh sách.
+2026-03-31 12:02:52,582 - ERROR - L\u1ed7i nghi\u1ec7p v\u1ee5 b\u1eaft \u0111\u01b0\u1ee3c: Tu\u1ed5i không h\u1ee3p l\u1ec7!
