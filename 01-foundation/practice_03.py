@@ -493,7 +493,26 @@ def filter_passed_students(students: List[Dict[str, Any]], passing_score: int = 
     # Bước 2: Sort - sắp xếp giảm dần
     return sorted(passed, key=lambda s: s['score'], reverse=True)
 
+def tinh_thue(thu_nhap: float) -> float:
+    if thu_nhap <= 0:
+        raise ValueError("Vui long nhap so thue!")
+    if thu_nhap >= 10000000:
+        return thu_nhap * 0.1
+    else:
+       return thu_nhap *0.05
 
+def chao_hoi(ten: str, ngon_ngu: str = "vi") -> str:
+    if ten is None:
+        raise ValueError("vui long nhap ten!")
+    if ngon_ngu == "vi":
+        return f"Xin chao{ten}"
+    else:
+        return f"Hello{ten}"
+
+def tim_max_trong_list(numbers: list[int]) -> int:
+    if len(numbers) == 0:
+        raise ValueError("List khong duoc rong!")
+    return max(numbers)
 # ==============================================================================
 # MAIN BLOCK - Chỉ chạy khi file được chạy trực tiếp
 # ==============================================================================
@@ -588,3 +607,7 @@ if __name__ == "__main__":
     print("\n" + "=" * 60)
     print("All tests completed!")
     print("=" * 60)
+
+    print("Theu la:",tinh_thue(10000000))
+    print("ngon ngu", chao_hoi("Alex"))
+    print(tim_max_trong_list([0]))

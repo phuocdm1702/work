@@ -19,6 +19,57 @@
 
 ## 📚 Kiến thức đã học
 
+### 1. Tổng quan nội dung
+Buổi học hôm nay tập trung vào việc làm chủ cách viết Function (hàm) trong Python, từ các khái niệm cơ bản đến các kỹ thuật chuyên nghiệp được sử dụng trong thực tế.
+
+### 2. Các kiến thức trọng tâm
+
+#### A. Cấu trúc Function chuẩn
+Một hàm chuyên nghiệp thường bao gồm:
+- **Type Hints**: Gợi ý kiểu dữ liệu đầu vào và đầu ra.
+- **Docstring**: Mô tả chi tiết chức năng, tham số (Args), giá trị trả về (Returns), và các lỗi có thể xảy ra (Raises).
+- **Logic**: Thân hàm được thụt lề 4 khoảng trắng.
+
+#### B. Type Hints & Union
+- **`Union[int, float]`**: Cho phép một biến có thể là kiểu `int` HOẶC `float`.
+- **`-> float`**: Chỉ định kiểu dữ liệu trả về của hàm.
+- *Lưu ý*: Type hints chỉ là gợi ý cho lập trình viên và IDE, không bắt buộc về mặt kỹ thuật nhưng cực kỳ quan trọng trong bảo trì code.
+
+#### C. Flexible Arguments (`*args`)
+- Cho phép truyền vào số lượng tham số không giới hạn.
+- Python sẽ gom các tham số này vào một `tuple`.
+- Ví dụ: `def tinh_tong(*numbers):` có thể nhận `tinh_tong(1, 2)` hoặc `tinh_tong(1, 2, 3, 4, 5)`.
+
+#### D. File Handling (JSON & CSV)
+- **JSON**: Dùng module `json`. Quan trọng nhất là `json.dump()` (ghi) và `json.load()` (đọc).
+- **CSV**: Dùng module `csv`. `csv.DictReader` rất hữu dụng để đọc mỗi dòng thành một dictionary.
+- **Pathlib**: Sử dụng `from pathlib import Path` để xử lý đường dẫn file an toàn trên cả Windows và Linux.
+
+#### E. Module Pattern (`if __name__ == "__main__":`)
+- Giúp phân biệt khi nào file được chạy trực tiếp, khi nào file được import vào file khác.
+- Đảm bảo code chạy thử (test) không bị thực thi ngoài ý muốn khi ta chỉ muốn sử dụng các hàm của file đó.
+
+### 3. Các bài tập đã thực hiện
+1. **Hàm cơ bản**: `nhan_doi`, `la_so_chan`.
+2. **Hàm nhiều tham số**: `dien_tich_hcn`, `trung_binh_cong`.
+3. **Control Flow**: `so_lon_hon`, `xep_loai_diem`.
+4. **Lambda & Sắp xếp**: `sap_xep_theo_diem`, `loc_sinh_vien_dat`.
+5. **Flexible Args**: `calculate_stats` (tính tổng, min, max, avg cùng lúc).
+6. **Xử lý File**: `save_to_json`, `load_from_json`, `read_students_from_csv`.
+
+### 4. Ghi chú cá nhân
+- Cần chú ý thụt lề (indentation) vì Python rất nghiêm ngặt việc này.
+- Khi làm việc với file, luôn dùng `with open(...)` để đảm bảo file được đóng tự động, tránh rò rỉ bộ nhớ.
+- Docstring nên viết theo chuẩn Google để dễ đọc và tương thích với các công cụ tạo tài liệu tự động.
+
+---
+*Ngày học: 31/03/2026*
+*Tài liệu thực hành: `01-foundation/practice_03.py`*
+
+---
+
+## 📚 Kiến thức đã học
+
 ### 1. *args và **kwargs
 
 **`*args` - Packing Operator:**
