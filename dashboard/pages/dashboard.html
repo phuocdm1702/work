@@ -1,51 +1,484 @@
-<div class="space-y-8" x-cloak>
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <template x-for="stat in stats" :key="stat.label">
-            <div class="surface p-6 rounded-xl">
-                <div class="text-slate-400 text-sm mb-1" x-text="stat.label"></div>
-                <div class="text-2xl font-bold text-sky-400" x-text="stat.value"></div>
+<div class="space-y-6" x-cloak>
+
+    <!-- GitHub Repository Info Card -->
+    <div class="enterprise-card fade-in" style="animation-delay: 0.1s">
+        <div class="enterprise-card-header">
+            <div class="flex items-center gap-3">
+                <div
+                    class="w-12 h-12 rounded-xl bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <path
+                            d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+                    </svg>
+                </div>
+                <div>
+                    <h2 class="text-lg font-semibold text-white"
+                        x-text="gitConfig.username && gitConfig.repo ? gitConfig.username + '/' + gitConfig.repo : 'Chưa cấu hình'">
+                    </h2>
+                    <p class="text-sm text-slate-400"
+                        x-text="gitInsights.lastUpdated ? 'Cập nhật lần cuối: ' + formatDate(gitInsights.lastUpdated) : 'Chưa có dữ liệu'">
+                    </p>
+                </div>
             </div>
-        </template>
+            <div class="flex items-center gap-3">
+                <div class="flex items-center gap-2 px-4 py-2 bg-slate-800/50 rounded-lg border border-slate-700">
+                    <div class="w-2 h-2 rounded-full"
+                        :class="gitInsights.loading ? 'bg-amber-400 animate-pulse' : (gitInsights.error ? 'bg-rose-400' : 'bg-emerald-400')">
+                    </div>
+                    <span class="text-sm text-slate-300"
+                        x-text="gitInsights.loading ? 'Đang cập nhật...' : (gitInsights.error ? 'Lỗi kết nối' : 'Đã kết nối')">Đã
+                        kết nối</span>
+                </div>
+                <button @click="fetchGitInsights()" class="btn btn-primary btn-sm" :disabled="gitInsights.loading">
+                    <svg class="w-4 h-4" :class="gitInsights.loading ? 'animate-spin' : ''" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    <span x-text="gitInsights.loading ? 'Đang tải...' : 'Làm mới'"></span>
+                </button>
+                <a x-show="gitConfig.username && gitConfig.repo"
+                    :href="'https://github.com/' + gitConfig.username + '/' + gitConfig.repo" target="_blank"
+                    class="btn btn-secondary btn-sm">
+                    <span>Xem trên GitHub</span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                </a>
+            </div>
+        </div>
+        <div class="enterprise-card-body">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <!-- GitHub Stats Summary -->
+                <div class="flex items-center gap-6">
+                    <div class="flex items-center gap-2">
+                        <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                        </svg>
+                        <span class="text-slate-400 text-sm"><span class="text-white font-semibold"
+                                x-text="gitInsights.pullRequests?.open || 0">0</span> open PRs</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span class="text-slate-400 text-sm"><span class="text-white font-semibold"
+                                x-text="gitInsights.issues?.open || 0">0</span> open issues</span>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div class="surface p-6 rounded-xl">
-            <h3 class="font-bold mb-4">Tiến độ theo giai đoạn</h3>
+    <!-- GitHub Metrics Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Pull Requests Card -->
+        <div class="enterprise-card fade-in" style="animation-delay: 0.2s">
+            <div class="enterprise-card-body">
+                <div class="stat-card">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
+                                <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                                </svg>
+                            </div>
+                            <span class="stat-label">Pull Requests</span>
+                        </div>
+                        <span class="stat-value"
+                            x-text="(gitInsights.pullRequests?.open || 0) + (gitInsights.pullRequests?.closed || 0) + (gitInsights.pullRequests?.merged || 0)">0</span>
+                    </div>
+                    <div class="flex items-center gap-4 mt-3 text-xs">
+                        <div class="flex items-center gap-1.5">
+                            <div class="w-2 h-2 rounded-full bg-green-500"></div>
+                            <span class="text-slate-400"><span x-text="gitInsights.pullRequests?.open || 0">0</span>
+                                Open</span>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <div class="w-2 h-2 rounded-full bg-purple-500"></div>
+                            <span class="text-slate-400"><span x-text="gitInsights.pullRequests?.merged || 0">0</span>
+                                Merged</span>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <div class="w-2 h-2 rounded-full bg-slate-500"></div>
+                            <span class="text-slate-400"><span x-text="gitInsights.pullRequests?.closed || 0">0</span>
+                                Closed</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Issues Card -->
+        <div class="enterprise-card fade-in" style="animation-delay: 0.3s">
+            <div class="enterprise-card-body">
+                <div class="stat-card">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-lg bg-amber-500/10 flex items-center justify-center">
+                                <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                            <span class="stat-label">Issues</span>
+                        </div>
+                        <span class="stat-value"
+                            x-text="(gitInsights.issues?.open || 0) + (gitInsights.issues?.closed || 0)">0</span>
+                    </div>
+                    <div class="flex items-center gap-4 mt-3 text-xs">
+                        <div class="flex items-center gap-1.5">
+                            <div class="w-2 h-2 rounded-full bg-green-500"></div>
+                            <span class="text-slate-400"><span x-text="gitInsights.issues?.open || 0">0</span>
+                                Open</span>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <div class="w-2 h-2 rounded-full bg-slate-500"></div>
+                            <span class="text-slate-400"><span x-text="gitInsights.issues?.closed || 0">0</span>
+                                Closed</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contributors Card -->
+        <div class="enterprise-card fade-in" style="animation-delay: 0.4s">
+            <div class="enterprise-card-body">
+                <div class="stat-card">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+                                <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                </svg>
+                            </div>
+                            <span class="stat-label">Contributors</span>
+                        </div>
+                        <span class="stat-value" x-text="gitInsights.contributors?.length || 0">0</span>
+                    </div>
+                    <div class="flex -space-x-2 mt-3">
+                        <template x-for="(contributor, index) in (gitInsights.contributors || []).slice(0, 5)"
+                            :key="contributor.login">
+                            <img :src="contributor.avatar_url" :alt="contributor.login"
+                                class="w-8 h-8 rounded-full border-2 border-slate-800"
+                                :title="contributor.login + ' - ' + contributor.contributions + ' contributions'">
+                        </template>
+                        <div x-show="(gitInsights.contributors || []).length > 5"
+                            class="w-8 h-8 rounded-full bg-slate-700 border-2 border-slate-800 flex items-center justify-center text-xs text-slate-300">
+                            +<span x-text="(gitInsights.contributors || []).length - 5"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Commits Card -->
+        <div class="enterprise-card fade-in" style="animation-delay: 0.5s">
+            <div class="enterprise-card-body">
+                <div class="stat-card">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center">
+                                <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                </svg>
+                            </div>
+                            <span class="stat-label">Commits (14 days)</span>
+                        </div>
+                        <span class="stat-value"
+                            x-text="(gitInsights.commitActivity || []).reduce((sum, week) => sum + week.total, 0)">0</span>
+                    </div>
+                    <div class="text-xs text-slate-400 mt-3">
+                        <span x-text="(gitInsights.commitActivity || []).length">0</span> weeks of activity
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Commit Activity Chart -->
+        <div class="surface p-6 rounded-xl border border-slate-700/50 h-80">
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <h3 class="font-semibold text-white">Commit Activity</h3>
+                    <p class="text-sm text-slate-400 mt-1">Weekly commit history (last 14 weeks)</p>
+                </div>
+                <div class="flex items-center gap-2 text-xs text-slate-400">
+                    <div class="w-3 h-3 rounded bg-sky-500"></div>
+                    <span>Commits</span>
+                </div>
+            </div>
+            <div class="h-56">
+                <div x-show="gitInsights.loading" class="flex items-center justify-center h-full">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-500"></div>
+                </div>
+                <div x-show="!gitInsights.loading && (!gitInsights.commitActivity || gitInsights.commitActivity.length === 0)"
+                    class="flex flex-col items-center justify-center h-full text-slate-500">
+                    <svg class="w-12 h-12 mb-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                    <p>No commit data available</p>
+                </div>
+                <canvas
+                    x-show="!gitInsights.loading && gitInsights.commitActivity && gitInsights.commitActivity.length > 0"
+                    id="commitChart" class="w-full h-full"></canvas>
+            </div>
+        </div>
+
+        <!-- Contributors Chart -->
+        <div class="surface p-6 rounded-xl border border-slate-700/50 h-80">
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <h3 class="font-semibold text-white">Top Contributors</h3>
+                    <p class="text-sm text-slate-400 mt-1">Contribution count by user</p>
+                </div>
+                <div class="flex items-center gap-2 text-xs text-slate-400">
+                    <div class="w-3 h-3 rounded bg-emerald-500"></div>
+                    <span>Contributions</span>
+                </div>
+            </div>
+            <div class="h-56">
+                <div x-show="gitInsights.loading" class="flex items-center justify-center h-full">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-500"></div>
+                </div>
+                <div x-show="!gitInsights.loading && (!gitInsights.contributors || gitInsights.contributors.length === 0)"
+                    class="flex flex-col items-center justify-center h-full text-slate-500">
+                    <svg class="w-12 h-12 mb-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    <p>No contributor data available</p>
+                </div>
+                <canvas x-show="!gitInsights.loading && gitInsights.contributors && gitInsights.contributors.length > 0"
+                    id="contributorChart" class="w-full h-full"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity Feed -->
+    <div class="surface p-6 rounded-xl border border-slate-700/50">
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h3 class="font-semibold text-white">Recent Activity</h3>
+                <p class="text-sm text-slate-400 mt-1">Latest pull requests and issues</p>
+            </div>
+        </div>
+
+        <div x-show="gitInsights.loading" class="flex items-center justify-center py-12">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-500"></div>
+        </div>
+
+        <div x-show="!gitInsights.loading" class="space-y-3">
+            <!-- Recent PRs -->
+            <template x-for="pr in (gitInsights.pullRequests?.items || []).slice(0, 3)" :key="pr.number">
+                <div
+                    class="flex items-center gap-4 p-4 bg-slate-800/50 rounded-lg border border-slate-700/50 hover:border-slate-600 transition-colors">
+                    <div class="flex-shrink-0">
+                        <div class="w-10 h-10 rounded-full flex items-center justify-center"
+                            :class="pr.state === 'open' ? 'bg-green-500/20' : (pr.merged ? 'bg-purple-500/20' : 'bg-slate-600/20')">
+                            <svg class="w-5 h-5"
+                                :class="pr.state === 'open' ? 'text-green-400' : (pr.merged ? 'text-purple-400' : 'text-slate-400')"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm font-medium text-white truncate" x-text="pr.title"></span>
+                            <span class="text-xs text-slate-500" x-text="'#' + pr.number"></span>
+                        </div>
+                        <div class="flex items-center gap-3 mt-1 text-xs text-slate-400">
+                            <span class="flex items-center gap-1">
+                                <img :src="'https://github.com/' + pr.author + '.png'" class="w-4 h-4 rounded-full"
+                                    onerror="this.style.display='none'">
+                                <span x-text="pr.author"></span>
+                            </span>
+                            <span x-text="formatTimeAgo(pr.created_at)"></span>
+                        </div>
+                    </div>
+                    <div class="flex-shrink-0">
+                        <span class="px-2 py-1 text-xs rounded-full font-medium"
+                            :class="pr.state === 'open' ? 'bg-green-500/20 text-green-400' : (pr.merged ? 'bg-purple-500/20 text-purple-400' : 'bg-slate-600/20 text-slate-400')"
+                            x-text="pr.state === 'open' ? 'Open' : (pr.merged ? 'Merged' : 'Closed')">
+                        </span>
+                    </div>
+                </div>
+            </template>
+
+            <!-- Recent Issues -->
+            <template x-for="issue in (gitInsights.issues?.items || []).slice(0, 2)" :key="issue.number">
+                <div
+                    class="flex items-center gap-4 p-4 bg-slate-800/50 rounded-lg border border-slate-700/50 hover:border-slate-600 transition-colors">
+                    <div class="flex-shrink-0">
+                        <div class="w-10 h-10 rounded-full flex items-center justify-center"
+                            :class="issue.state === 'open' ? 'bg-amber-500/20' : 'bg-slate-600/20'">
+                            <svg class="w-5 h-5" :class="issue.state === 'open' ? 'text-amber-400' : 'text-slate-400'"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm font-medium text-white truncate" x-text="issue.title"></span>
+                            <span class="text-xs text-slate-500" x-text="'#' + issue.number"></span>
+                        </div>
+                        <div class="flex items-center gap-3 mt-1 text-xs text-slate-400">
+                            <span class="flex items-center gap-1">
+                                <img :src="'https://github.com/' + issue.author + '.png'" class="w-4 h-4 rounded-full"
+                                    onerror="this.style.display='none'">
+                                <span x-text="issue.author"></span>
+                            </span>
+                            <span x-text="formatTimeAgo(issue.created_at)"></span>
+                        </div>
+                    </div>
+                    <div class="flex-shrink-0">
+                        <span class="px-2 py-1 text-xs rounded-full font-medium"
+                            :class="issue.state === 'open' ? 'bg-amber-500/20 text-amber-400' : 'bg-slate-600/20 text-slate-400'"
+                            x-text="issue.state === 'open' ? 'Open' : 'Closed'">
+                        </span>
+                    </div>
+                </div>
+            </template>
+
+            <div x-show="(!gitInsights.pullRequests?.items || gitInsights.pullRequests.items.length === 0) && (!gitInsights.issues?.items || gitInsights.issues.items.length === 0)"
+                class="flex flex-col items-center justify-center py-12 text-slate-500">
+                <svg class="w-12 h-12 mb-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+                <p>No recent activity</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Learning Progress Section (Original) -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="surface p-6 rounded-xl border border-slate-700/50">
+            <h3 class="font-semibold text-white mb-4">Tiến độ theo giai đoạn</h3>
             <canvas id="progressChart" height="200"></canvas>
         </div>
-        <div class="surface p-6 rounded-xl">
-            <h3 class="font-bold mb-4">Hoạt động gần đây</h3>
+        <div class="surface p-6 rounded-xl border border-slate-700/50">
+            <h3 class="font-semibold text-white mb-4">Kỹ năng</h3>
             <div class="space-y-4">
-                <template x-for="act in recentActivity" :key="act.id">
-                    <div class="flex items-start gap-4">
-                        <template x-if="act.type === 'case_study'">
-                            <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6 dark:bg-blue-900/20 w-full">
-                                <div class="flex items-center mb-2">
-                                    <svg class="w-5 h-5 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                                    </svg>
-                                    <h4 class="font-bold text-blue-800 dark:text-blue-300" x-text="act.title"></h4>
-                                </div>
-                                <p class="text-blue-700 dark:text-blue-200 leading-relaxed" x-text="act.text"></p>
-                            </div>
-                        </template>
-
-                        <template x-if="act.type === 'concept'">
-                            <div class="mb-8 w-full">
-                                <h4 class="text-xl font-bold text-slate-800 dark:text-white mb-3 flex items-center">
-                                    <span class="w-2 h-6 bg-indigo-500 rounded mr-3"></span>
-                                    <span x-text="act.title"></span>
-                                </h4>
-                                <div class="prose dark:prose-invert max-w-none">
-                                    <p class="text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-line"
-                                        x-html="act.text.replace(/\*\*(.*?)\*\*/g, '<strong class=\'text-indigo-600 dark:text-indigo-400\'>$1</strong>')">
-                                    </p>
-                                </div>
-                            </div>
-                        </template>
+                <template x-for="(value, skill) in progress.skills" :key="skill">
+                    <div>
+                        <div class="flex justify-between mb-1">
+                            <span class="text-sm text-slate-300" x-text="skill"></span>
+                            <span class="text-sm text-sky-400" x-text="value + '%'"></span>
+                        </div>
+                        <div class="w-full bg-slate-700 rounded-full h-2">
+                            <div class="bg-sky-500 h-2 rounded-full transition-all duration-500"
+                                :style="'width: ' + value + '%'"></div>
+                        </div>
                     </div>
                 </template>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    // Initialize charts when dashboard loads
+    document.addEventListener('alpine:initialized', () => {
+        setTimeout(() => {
+            initDashboardCharts();
+        }, 300);
+    });
+
+    function initDashboardCharts() {
+        const app = Alpine.data('cmsApp');
+        if (!app) return;
+
+        // Commit Activity Chart
+        const commitCtx = document.getElementById('commitChart');
+        if (commitCtx && app.gitInsights?.commitActivity?.length > 0) {
+            const weeks = app.gitInsights.commitActivity.map(w => {
+                const date = new Date(w.week * 1000);
+                return 'W' + date.getWeek();
+            });
+            const commits = app.gitInsights.commitActivity.map(w => w.total);
+
+            new Chart(commitCtx, {
+                type: 'line',
+                data: {
+                    labels: weeks,
+                    datasets: [{
+                        label: 'Commits',
+                        data: commits,
+                        borderColor: '#38bdf8',
+                        backgroundColor: 'rgba(56, 189, 248, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 3,
+                        pointBackgroundColor: '#38bdf8'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: 'rgba(148, 163, 184, 0.1)' }, ticks: { color: '#94a3b8', font: { size: 10 } } },
+                        x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 10 }, maxRotation: 45, minRotation: 45 } }
+                    }
+                }
+            });
+        }
+
+        // Contributors Chart
+        const contributorCtx = document.getElementById('contributorChart');
+        if (contributorCtx && app.gitInsights?.contributors?.length > 0) {
+            const names = app.gitInsights.contributors.slice(0, 8).map(c => c.login);
+            const contributions = app.gitInsights.contributors.slice(0, 8).map(c => c.contributions);
+
+            new Chart(contributorCtx, {
+                type: 'bar',
+                data: {
+                    labels: names,
+                    datasets: [{
+                        label: 'Contributions',
+                        data: contributions,
+                        backgroundColor: '#10b981',
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: 'rgba(148, 163, 184, 0.1)' }, ticks: { color: '#94a3b8', font: { size: 10 } } },
+                        x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 10 }, maxRotation: 45, minRotation: 0 } }
+                    }
+                }
+            });
+        }
+    }
+
+    // Helper to get week number
+    Date.prototype.getWeek = function () {
+        const d = new Date(Date.UTC(this.getFullYear(), this.getMonth(), this.getDate()));
+        const dayNum = d.getUTCDay() || 7;
+        d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+        const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+        return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+    };
+</script>

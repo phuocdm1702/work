@@ -6,6 +6,41 @@
 
 ---
 
+## 0. Tóm tắt nhanh (TL;DR)
+
+Buổi này giúp bạn viết code “đúng chuẩn nghề” khi làm việc với function và file:
+
+- Function không chỉ là `def ...`: bạn cần tư duy về **input validation**, **output contract**, và khả năng tái sử dụng.
+- Type hints (`Union`, `Optional`, `List[Dict[str, Any]]`) giúp IDE hiểu data structure và giảm lỗi khi refactor.
+- Docstring (chuẩn Google) là “tài liệu sống” gắn trực tiếp với function.
+- `*args` cho phép thiết kế API linh hoạt.
+- Lambda + `sorted(key=...)` giải quyết bài toán sort/filter rất gọn.
+- File handling phải đi kèm:
+  - `with open(...)` (đóng file tự động)
+  - `pathlib.Path` (path an toàn)
+  - hiểu lỗi thường gặp: `FileNotFoundError`, `UnicodeEncodeError`, `JSONDecodeError`
+
+---
+
+## 0.1 Cách đọc bài này (như một chương sách)
+
+Nếu bạn muốn học theo thứ tự “từ chắc nền tới nâng cao”, đi theo flow:
+
+1. Function fundamentals
+2. `*args` (thiết kế hàm linh hoạt)
+3. Type hints + Docstrings (viết hàm có hợp đồng rõ ràng)
+4. Lambda + sorting/filtering
+5. Module pattern (`if __name__ == "__main__"`)
+6. File handling: JSON/CSV + `pathlib`
+
+Nếu bạn học để “áp dụng ngay”, đọc thẳng phần:
+
+- `File Handling` + `CSV to JSON Pipeline`
+- Bảng `Lỗi hay gặp & Cách tránh`
+- `Best Practices`
+
+---
+
 ## 🎯 Mục tiêu buổi học
 
 1. Hiểu và sử dụng `*args`, `**kwargs` cho flexible arguments
@@ -359,6 +394,30 @@ if __name__ == "__main__":
 | `TypeError: not JSON serializable` | Data chứa object không serialize được | Chỉ dùng dict, list, primitive types |
 | `UnicodeEncodeError` | Ghi file không dùng encoding | Luôn dùng `encoding='utf-8'` |
 | Block `__main__` chạy khi import | Code ở global scope | Đưa test code vào `if __name__ == '__main__':` |
+
+---
+
+## ✅ Checklist khi viết function/file-handling (dùng như quy trình)
+
+### Checklist cho function
+
+- Bạn đã xác định rõ “contract” của hàm chưa?
+  - Input là gì (type/structure)?
+  - Output là gì?
+  - Khi nào raise exception?
+- Có cần validate đầu vào không? (fail fast)
+- Có thể viết unit test đơn giản cho 3 case không?
+  - Case bình thường
+  - Case biên
+  - Case lỗi
+
+### Checklist cho file handling
+
+- Luôn dùng `with open(...)` chưa?
+- Đã chỉ định `encoding='utf-8'` chưa?
+- Với CSV trên Windows: đã dùng `newline=''` chưa?
+- Path có thể chưa tồn tại: đã `mkdir(parents=True, exist_ok=True)` chưa?
+- Đã xử lý trường hợp file không tồn tại / JSON lỗi format chưa?
 
 ---
 
