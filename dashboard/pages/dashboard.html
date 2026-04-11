@@ -1,484 +1,558 @@
-<div class="space-y-6" x-cloak>
+<div class="h-full flex flex-col" x-cloak>
+    <div class="flex gap-6 h-full overflow-hidden">
+        <!-- LEFT: Main Dashboard Content -->
+        <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+            <div class="flex-1 overflow-y-auto custom-scrollbar pr-2 space-y-6">
 
-    <!-- GitHub Repository Info Card -->
-    <div class="enterprise-card fade-in" style="animation-delay: 0.1s">
-        <div class="enterprise-card-header">
-            <div class="flex items-center gap-3">
-                <div
-                    class="w-12 h-12 rounded-xl bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center flex-shrink-0">
-                    <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-                        <path
-                            d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
-                    </svg>
-                </div>
-                <div>
-                    <h2 class="text-lg font-semibold text-white"
-                        x-text="gitConfig.username && gitConfig.repo ? gitConfig.username + '/' + gitConfig.repo : 'Chưa cấu hình'">
-                    </h2>
-                    <p class="text-sm text-slate-400"
-                        x-text="gitInsights.lastUpdated ? 'Cập nhật lần cuối: ' + formatDate(gitInsights.lastUpdated) : 'Chưa có dữ liệu'">
-                    </p>
-                </div>
-            </div>
-            <div class="flex items-center gap-3">
-                <div class="flex items-center gap-2 px-4 py-2 bg-slate-800/50 rounded-lg border border-slate-700">
-                    <div class="w-2 h-2 rounded-full"
-                        :class="gitInsights.loading ? 'bg-amber-400 animate-pulse' : (gitInsights.error ? 'bg-rose-400' : 'bg-emerald-400')">
-                    </div>
-                    <span class="text-sm text-slate-300"
-                        x-text="gitInsights.loading ? 'Đang cập nhật...' : (gitInsights.error ? 'Lỗi kết nối' : 'Đã kết nối')">Đã
-                        kết nối</span>
-                </div>
-                <button @click="fetchGitInsights()" class="btn btn-primary btn-sm" :disabled="gitInsights.loading">
-                    <svg class="w-4 h-4" :class="gitInsights.loading ? 'animate-spin' : ''" fill="none"
-                        stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                    </svg>
-                    <span x-text="gitInsights.loading ? 'Đang tải...' : 'Làm mới'"></span>
-                </button>
-                <a x-show="gitConfig.username && gitConfig.repo"
-                    :href="'https://github.com/' + gitConfig.username + '/' + gitConfig.repo" target="_blank"
-                    class="btn btn-secondary btn-sm">
-                    <span>Xem trên GitHub</span>
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                    </svg>
-                </a>
-            </div>
-        </div>
-        <div class="enterprise-card-body">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <!-- GitHub Stats Summary -->
-                <div class="flex items-center gap-6">
-                    <div class="flex items-center gap-2">
-                        <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-                        </svg>
-                        <span class="text-slate-400 text-sm"><span class="text-white font-semibold"
-                                x-text="gitInsights.pullRequests?.open || 0">0</span> open PRs</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <span class="text-slate-400 text-sm"><span class="text-white font-semibold"
-                                x-text="gitInsights.issues?.open || 0">0</span> open issues</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- GitHub Metrics Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <!-- Pull Requests Card -->
-        <div class="enterprise-card fade-in" style="animation-delay: 0.2s">
-            <div class="enterprise-card-body">
-                <div class="stat-card">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
-                                <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-                                </svg>
-                            </div>
-                            <span class="stat-label">Pull Requests</span>
-                        </div>
-                        <span class="stat-value"
-                            x-text="(gitInsights.pullRequests?.open || 0) + (gitInsights.pullRequests?.closed || 0) + (gitInsights.pullRequests?.merged || 0)">0</span>
-                    </div>
-                    <div class="flex items-center gap-4 mt-3 text-xs">
-                        <div class="flex items-center gap-1.5">
-                            <div class="w-2 h-2 rounded-full bg-green-500"></div>
-                            <span class="text-slate-400"><span x-text="gitInsights.pullRequests?.open || 0">0</span>
-                                Open</span>
-                        </div>
-                        <div class="flex items-center gap-1.5">
-                            <div class="w-2 h-2 rounded-full bg-purple-500"></div>
-                            <span class="text-slate-400"><span x-text="gitInsights.pullRequests?.merged || 0">0</span>
-                                Merged</span>
-                        </div>
-                        <div class="flex items-center gap-1.5">
-                            <div class="w-2 h-2 rounded-full bg-slate-500"></div>
-                            <span class="text-slate-400"><span x-text="gitInsights.pullRequests?.closed || 0">0</span>
-                                Closed</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Issues Card -->
-        <div class="enterprise-card fade-in" style="animation-delay: 0.3s">
-            <div class="enterprise-card-body">
-                <div class="stat-card">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-lg bg-amber-500/10 flex items-center justify-center">
-                                <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                            </div>
-                            <span class="stat-label">Issues</span>
-                        </div>
-                        <span class="stat-value"
-                            x-text="(gitInsights.issues?.open || 0) + (gitInsights.issues?.closed || 0)">0</span>
-                    </div>
-                    <div class="flex items-center gap-4 mt-3 text-xs">
-                        <div class="flex items-center gap-1.5">
-                            <div class="w-2 h-2 rounded-full bg-green-500"></div>
-                            <span class="text-slate-400"><span x-text="gitInsights.issues?.open || 0">0</span>
-                                Open</span>
-                        </div>
-                        <div class="flex items-center gap-1.5">
-                            <div class="w-2 h-2 rounded-full bg-slate-500"></div>
-                            <span class="text-slate-400"><span x-text="gitInsights.issues?.closed || 0">0</span>
-                                Closed</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Contributors Card -->
-        <div class="enterprise-card fade-in" style="animation-delay: 0.4s">
-            <div class="enterprise-card-body">
-                <div class="stat-card">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center">
-                                <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                                </svg>
-                            </div>
-                            <span class="stat-label">Contributors</span>
-                        </div>
-                        <span class="stat-value" x-text="gitInsights.contributors?.length || 0">0</span>
-                    </div>
-                    <div class="flex -space-x-2 mt-3">
-                        <template x-for="(contributor, index) in (gitInsights.contributors || []).slice(0, 5)"
-                            :key="contributor.login">
-                            <img :src="contributor.avatar_url" :alt="contributor.login"
-                                class="w-8 h-8 rounded-full border-2 border-slate-800"
-                                :title="contributor.login + ' - ' + contributor.contributions + ' contributions'">
-                        </template>
-                        <div x-show="(gitInsights.contributors || []).length > 5"
-                            class="w-8 h-8 rounded-full bg-slate-700 border-2 border-slate-800 flex items-center justify-center text-xs text-slate-300">
-                            +<span x-text="(gitInsights.contributors || []).length - 5"></span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Commits Card -->
-        <div class="enterprise-card fade-in" style="animation-delay: 0.5s">
-            <div class="enterprise-card-body">
-                <div class="stat-card">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center">
-                                <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                                </svg>
-                            </div>
-                            <span class="stat-label">Commits (14 days)</span>
-                        </div>
-                        <span class="stat-value"
-                            x-text="(gitInsights.commitActivity || []).reduce((sum, week) => sum + week.total, 0)">0</span>
-                    </div>
-                    <div class="text-xs text-slate-400 mt-3">
-                        <span x-text="(gitInsights.commitActivity || []).length">0</span> weeks of activity
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Charts Section -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <!-- Commit Activity Chart -->
-        <div class="surface p-6 rounded-xl border border-slate-700/50 h-80">
-            <div class="flex items-center justify-between mb-4">
-                <div>
-                    <h3 class="font-semibold text-white">Commit Activity</h3>
-                    <p class="text-sm text-slate-400 mt-1">Weekly commit history (last 14 weeks)</p>
-                </div>
-                <div class="flex items-center gap-2 text-xs text-slate-400">
-                    <div class="w-3 h-3 rounded bg-sky-500"></div>
-                    <span>Commits</span>
-                </div>
-            </div>
-            <div class="h-56">
-                <div x-show="gitInsights.loading" class="flex items-center justify-center h-full">
-                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-500"></div>
-                </div>
-                <div x-show="!gitInsights.loading && (!gitInsights.commitActivity || gitInsights.commitActivity.length === 0)"
-                    class="flex flex-col items-center justify-center h-full text-slate-500">
-                    <svg class="w-12 h-12 mb-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                    </svg>
-                    <p>No commit data available</p>
-                </div>
-                <canvas
-                    x-show="!gitInsights.loading && gitInsights.commitActivity && gitInsights.commitActivity.length > 0"
-                    id="commitChart" class="w-full h-full"></canvas>
-            </div>
-        </div>
-
-        <!-- Contributors Chart -->
-        <div class="surface p-6 rounded-xl border border-slate-700/50 h-80">
-            <div class="flex items-center justify-between mb-4">
-                <div>
-                    <h3 class="font-semibold text-white">Top Contributors</h3>
-                    <p class="text-sm text-slate-400 mt-1">Contribution count by user</p>
-                </div>
-                <div class="flex items-center gap-2 text-xs text-slate-400">
-                    <div class="w-3 h-3 rounded bg-emerald-500"></div>
-                    <span>Contributions</span>
-                </div>
-            </div>
-            <div class="h-56">
-                <div x-show="gitInsights.loading" class="flex items-center justify-center h-full">
-                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-500"></div>
-                </div>
-                <div x-show="!gitInsights.loading && (!gitInsights.contributors || gitInsights.contributors.length === 0)"
-                    class="flex flex-col items-center justify-center h-full text-slate-500">
-                    <svg class="w-12 h-12 mb-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                    <p>No contributor data available</p>
-                </div>
-                <canvas x-show="!gitInsights.loading && gitInsights.contributors && gitInsights.contributors.length > 0"
-                    id="contributorChart" class="w-full h-full"></canvas>
-            </div>
-        </div>
-    </div>
-
-    <!-- Recent Activity Feed -->
-    <div class="surface p-6 rounded-xl border border-slate-700/50">
-        <div class="flex items-center justify-between mb-6">
-            <div>
-                <h3 class="font-semibold text-white">Recent Activity</h3>
-                <p class="text-sm text-slate-400 mt-1">Latest pull requests and issues</p>
-            </div>
-        </div>
-
-        <div x-show="gitInsights.loading" class="flex items-center justify-center py-12">
-            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-500"></div>
-        </div>
-
-        <div x-show="!gitInsights.loading" class="space-y-3">
-            <!-- Recent PRs -->
-            <template x-for="pr in (gitInsights.pullRequests?.items || []).slice(0, 3)" :key="pr.number">
-                <div
-                    class="flex items-center gap-4 p-4 bg-slate-800/50 rounded-lg border border-slate-700/50 hover:border-slate-600 transition-colors">
-                    <div class="flex-shrink-0">
-                        <div class="w-10 h-10 rounded-full flex items-center justify-center"
-                            :class="pr.state === 'open' ? 'bg-green-500/20' : (pr.merged ? 'bg-purple-500/20' : 'bg-slate-600/20')">
-                            <svg class="w-5 h-5"
-                                :class="pr.state === 'open' ? 'text-green-400' : (pr.merged ? 'text-purple-400' : 'text-slate-400')"
-                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <!-- GitHub Connection Status Banner -->
+                <div x-show="!gitConfig.username || !gitConfig.repo"
+                    class="enterprise-card border-l-4 border-l-amber-500">
+                    <div class="enterprise-card-body">
+                        <div class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-amber-400 shrink-0 mt-0.5" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <div>
+                                <p class="text-sm text-slate-200 font-medium">Repository chưa được cấu hình</p>
+                                <p class="text-xs text-slate-400 mt-1">Thiết lập GitHub credentials trong Settings để
+                                    xem thống kê.</p>
+                                <a href="#/settings"
+                                    class="text-sky-400 hover:text-sky-300 text-xs mt-2 inline-block">Cấu hình ngay
+                                    →</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Repo Info Header Card -->
+                <div class="enterprise-card" x-show="gitConfig.username && gitConfig.repo && gitInsights.repoInfo">
+                    <div class="enterprise-card-body">
+                        <div class="flex items-center justify-between flex-wrap gap-4">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-xl bg-slate-800 flex items-center justify-center">
+                                    <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                        <path
+                                            d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.341 1.304 3.492.997.092-.647.35-1.088.636-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-bold text-white" x-text="gitConfig.repo"></h3>
+                                    <p class="text-sm text-slate-400" x-text="gitConfig.username"></p>
+                                    <p class="text-xs text-slate-500 mt-1" x-show="gitInsights.repoInfo?.description"
+                                        x-text="gitInsights.repoInfo?.description"></p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-6 text-sm">
+                                <div class="flex items-center gap-2">
+                                    <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                                    </svg>
+                                    <span class="text-slate-200 font-bold"
+                                        x-text="gitInsights.repoInfo?.stars || 0"></span>
+                                    <span class="text-slate-500">stars</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <svg class="w-5 h-5 text-sky-400" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                                    </svg>
+                                    <span class="text-slate-200 font-bold"
+                                        x-text="gitInsights.repoInfo?.forks || 0"></span>
+                                    <span class="text-slate-500">forks</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </svg>
+                                    <span class="text-slate-200 font-bold"
+                                        x-text="gitInsights.repoInfo?.watchers || 0"></span>
+                                    <span class="text-slate-500">watchers</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
+                                    </svg>
+                                    <span class="text-slate-200 font-bold"
+                                        x-text="gitInsights.repoInfo?.size ? (gitInsights.repoInfo.size / 1024).toFixed(2) + ' MB' : '0 MB'"></span>
+                                    <span class="text-slate-500">size</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Topics -->
+                        <div class="flex flex-wrap gap-2 mt-4" x-show="gitInsights.repoInfo?.topics?.length > 0">
+                            <template x-for="topic in gitInsights.repoInfo.topics" :key="topic">
+                                <span class="px-2 py-1 bg-sky-500/20 text-sky-400 rounded text-xs"
+                                    x-text="topic"></span>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats Overview Cards -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4" x-show="gitConfig.username && gitConfig.repo">
+                    <!-- Commits -->
+                    <div class="enterprise-card">
+                        <div class="enterprise-card-body">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-xs text-slate-500 uppercase font-bold tracking-wider">Commits</p>
+                                    <p class="text-2xl font-bold text-white mt-1" x-text="commits.length">0</p>
+                                </div>
+                                <div class="w-10 h-10 rounded-lg bg-sky-500/20 flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-sky-400" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Pull Requests -->
+                    <div class="enterprise-card">
+                        <div class="enterprise-card-body">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-xs text-slate-500 uppercase font-bold tracking-wider">Pull Requests
+                                    </p>
+                                    <p class="text-2xl font-bold text-white mt-1"
+                                        x-text="gitInsights.pullRequests.open + gitInsights.pullRequests.merged">0</p>
+                                </div>
+                                <div class="w-10 h-10 rounded-lg bg-emerald-500/20 flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="flex gap-2 mt-3 text-xs">
+                                <span class="text-emerald-400" x-text="gitInsights.pullRequests.open + ' open'"></span>
+                                <span class="text-slate-500">•</span>
+                                <span class="text-purple-400"
+                                    x-text="gitInsights.pullRequests.merged + ' merged'"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Issues -->
+                    <div class="enterprise-card">
+                        <div class="enterprise-card-body">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-xs text-slate-500 uppercase font-bold tracking-wider">Issues</p>
+                                    <p class="text-2xl font-bold text-white mt-1"
+                                        x-text="gitInsights.issues.open + gitInsights.issues.closed">0</p>
+                                </div>
+                                <div class="w-10 h-10 rounded-lg bg-rose-500/20 flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-rose-400" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="flex gap-2 mt-3 text-xs">
+                                <span class="text-rose-400" x-text="gitInsights.issues.open + ' open'"></span>
+                                <span class="text-slate-500">•</span>
+                                <span class="text-slate-400" x-text="gitInsights.issues.closed + ' closed'"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Contributors -->
+                    <div class="enterprise-card">
+                        <div class="enterprise-card-body">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-xs text-slate-500 uppercase font-bold tracking-wider">Contributors
+                                    </p>
+                                    <p class="text-2xl font-bold text-white mt-1"
+                                        x-text="gitInsights.contributors.length">0</p>
+                                </div>
+                                <div class="w-10 h-10 rounded-lg bg-amber-500/20 flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Row -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6" x-show="gitConfig.username && gitConfig.repo">
+                    <!-- Commit Activity Chart -->
+                    <div class="enterprise-card">
+                        <div class="enterprise-card-header">
+                            <h3 class="font-semibold text-white flex items-center gap-2">
+                                <svg class="w-5 h-5 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+                                </svg>
+                                Commit Activity
+                            </h3>
+                            <span class="text-xs text-slate-500">14 tuần gần nhất</span>
+                        </div>
+                        <div class="enterprise-card-body">
+                            <div class="h-48" x-show="gitInsights.commitActivity.length > 0">
+                                <canvas id="commitChart"></canvas>
+                            </div>
+                            <div x-show="gitInsights.commitActivity.length === 0"
+                                class="h-48 flex items-center justify-center text-slate-500 text-sm">
+                                Chưa có dữ liệu activity
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contributors Chart -->
+                    <div class="enterprise-card">
+                        <div class="enterprise-card-header">
+                            <h3 class="font-semibold text-white flex items-center gap-2">
+                                <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                                Top Contributors
+                            </h3>
+                        </div>
+                        <div class="enterprise-card-body">
+                            <div class="h-48" x-show="gitInsights.contributors.length > 0">
+                                <canvas id="contributorChart"></canvas>
+                            </div>
+                            <div x-show="gitInsights.contributors.length === 0"
+                                class="h-48 flex items-center justify-center text-slate-500 text-sm">
+                                Chưa có dữ liệu contributors
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Row 2: Languages & Code Frequency -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6" x-show="gitConfig.username && gitConfig.repo">
+                    <!-- Languages Chart -->
+                    <div class="enterprise-card">
+                        <div class="enterprise-card-header">
+                            <h3 class="font-semibold text-white flex items-center gap-2">
+                                <svg class="w-5 h-5 text-purple-500" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                                </svg>
+                                Languages
+                            </h3>
+                            <span class="text-xs text-slate-500" x-show="gitInsights.repoInfo?.language"
+                                x-text="'Main: ' + gitInsights.repoInfo.language"></span>
+                        </div>
+                        <div class="enterprise-card-body">
+                            <div class="h-48" x-show="Object.keys(gitInsights.languages).length > 0">
+                                <canvas id="languagesChart"></canvas>
+                            </div>
+                            <div x-show="Object.keys(gitInsights.languages).length === 0"
+                                class="h-48 flex items-center justify-center text-slate-500 text-sm">
+                                Chưa có dữ liệu ngôn ngữ
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Code Frequency Chart -->
+                    <div class="enterprise-card">
+                        <div class="enterprise-card-header">
+                            <h3 class="font-semibold text-white flex items-center gap-2">
+                                <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 002 2h2a2 2 0 002-2z" />
+                                </svg>
+                                Code Frequency
+                            </h3>
+                            <span class="text-xs text-slate-500">Additions & Deletions</span>
+                        </div>
+                        <div class="enterprise-card-body">
+                            <div class="h-48" x-show="gitInsights.codeFrequency.length > 0">
+                                <canvas id="codeFreqChart"></canvas>
+                            </div>
+                            <div x-show="gitInsights.codeFrequency.length === 0"
+                                class="h-48 flex items-center justify-center text-slate-500 text-sm">
+                                Chưa có dữ liệu code frequency
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Commits Section -->
+                <div class="enterprise-card" x-show="gitConfig.username && gitConfig.repo">
+                    <div class="enterprise-card-header">
+                        <h3 class="font-semibold text-white flex items-center gap-2">
+                            <svg class="w-5 h-5 text-sky-500" fill="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.341-3.369-1.341-.454-1.152-1.11-1.459-1.11-1.459-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12c0-5.523-4.477-10-10-10z" />
+                            </svg>
+                            Recent Commits
+                        </h3>
+                        <div class="flex items-center gap-3">
+                            <button @click="fetchCommits(); fetchGitInsights();" class="btn btn-secondary btn-sm"
+                                :class="gitLoading ? 'opacity-50 cursor-not-allowed' : ''"
+                                :disabled="gitLoading || !gitConfig.username">
+                                <svg class="w-4 h-4" :class="gitLoading ? 'animate-spin' : ''" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                </svg>
+                                <span x-text="gitLoading ? 'Loading...' : 'Refresh'"></span>
+                            </button>
+                            <span
+                                class="text-xs text-slate-500 font-mono bg-slate-900/50 px-2 py-1 rounded border border-slate-700/50"
+                                x-text="commits.length + ' commits'"></span>
+                        </div>
+                    </div>
+                    <div class="divide-y divide-slate-700/30 max-h-96 overflow-y-auto custom-scrollbar">
+                        <template x-for="commit in commits.slice(0, 10)" :key="commit.sha">
+                            <div class="px-5 py-4 hover:bg-slate-800/30 transition-colors">
+                                <div class="flex items-start justify-between gap-4">
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <span :class="{
+                                                'bg-emerald-500/20 text-emerald-400 border-emerald-500/30': commit.type === 'feat',
+                                                'bg-rose-500/20 text-rose-400 border-rose-500/30': commit.type === 'fix',
+                                                'bg-blue-500/20 text-blue-400 border-blue-500/30': commit.type === 'docs',
+                                                'bg-amber-500/20 text-amber-400 border-amber-500/30': commit.type === 'test',
+                                                'bg-purple-500/20 text-purple-400 border-purple-500/30': commit.type === 'refactor',
+                                                'bg-slate-500/20 text-slate-400 border-slate-500/30': !commit.type || commit.type === 'unknown'
+                                            }" class="text-xs font-bold px-2 py-0.5 rounded border"
+                                                x-text="commit.type || 'unknown'"></span>
+                                            <span class="text-xs text-slate-500 font-mono"
+                                                x-text="commit.sha.substring(0, 7)"></span>
+                                        </div>
+                                        <div class="text-sm text-slate-200 font-medium truncate"
+                                            x-text="commit.message"></div>
+                                        <div class="text-xs text-slate-500 mt-1"
+                                            x-text="new Date(commit.date).toLocaleDateString('vi-VN') + ' ' + new Date(commit.date).toLocaleTimeString('vi-VN', {hour: '2-digit', minute:'2-digit'})">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                    <div class="enterprise-card-footer flex justify-center" x-show="commits.length > 10">
+                        <a :href="`https://github.com/${gitConfig.username}/${gitConfig.repo}/commits`" target="_blank"
+                            class="text-sky-400 hover:text-sky-300 text-sm flex items-center gap-1">
+                            Xem tất cả commits
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Welcome / Getting Started (when no github config) -->
+                <div x-show="!gitConfig.username || !gitConfig.repo" class="enterprise-card">
+                    <div class="enterprise-card-header">
+                        <h3 class="font-semibold text-white">Chào mừng đến Python Learning Dashboard</h3>
+                    </div>
+                    <div class="enterprise-card-body space-y-4">
+                        <p class="text-slate-400">Dashboard này giúp bạn theo dõi:</p>
+                        <ul class="space-y-2 text-sm text-slate-300">
+                            <li class="flex items-center gap-2">
+                                <svg class="w-4 h-4 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7" />
+                                </svg>
+                                Thống kê commits, PRs, issues từ GitHub
+                            </li>
+                            <li class="flex items-center gap-2">
+                                <svg class="w-4 h-4 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7" />
+                                </svg>
+                                Biểu đồ activity và contributors
+                            </li>
+                            <li class="flex items-center gap-2">
+                                <svg class="w-4 h-4 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7" />
+                                </svg>
+                                Lịch sử commit gần đây
+                            </li>
+                        </ul>
+                        <div class="pt-4 border-t border-slate-700/50">
+                            <a href="#/settings" class="btn btn-primary">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                Thiết lập GitHub
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- RIGHT: Sidebar -->
+        <aside class="w-80 flex flex-col gap-4 overflow-y-auto pr-2 custom-scrollbar shrink-0"
+            x-show="gitConfig.username && gitConfig.repo">
+
+            <!-- Repository Info -->
+            <div class="enterprise-card">
+                <div class="enterprise-card-header">
+                    <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Repository</h4>
+                </div>
+                <div class="enterprise-card-body space-y-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-lg bg-slate-800 flex items-center justify-center">
+                            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
                             </svg>
                         </div>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <div class="flex items-center gap-2">
-                            <span class="text-sm font-medium text-white truncate" x-text="pr.title"></span>
-                            <span class="text-xs text-slate-500" x-text="'#' + pr.number"></span>
-                        </div>
-                        <div class="flex items-center gap-3 mt-1 text-xs text-slate-400">
-                            <span class="flex items-center gap-1">
-                                <img :src="'https://github.com/' + pr.author + '.png'" class="w-4 h-4 rounded-full"
-                                    onerror="this.style.display='none'">
-                                <span x-text="pr.author"></span>
-                            </span>
-                            <span x-text="formatTimeAgo(pr.created_at)"></span>
+                        <div class="min-w-0">
+                            <p class="text-sm font-medium text-white truncate" x-text="gitConfig.repo"></p>
+                            <p class="text-xs text-slate-500" x-text="gitConfig.username"></p>
                         </div>
                     </div>
-                    <div class="flex-shrink-0">
-                        <span class="px-2 py-1 text-xs rounded-full font-medium"
-                            :class="pr.state === 'open' ? 'bg-green-500/20 text-green-400' : (pr.merged ? 'bg-purple-500/20 text-purple-400' : 'bg-slate-600/20 text-slate-400')"
-                            x-text="pr.state === 'open' ? 'Open' : (pr.merged ? 'Merged' : 'Closed')">
-                        </span>
-                    </div>
+                    <a :href="`https://github.com/${gitConfig.username}/${gitConfig.repo}`" target="_blank"
+                        class="btn btn-secondary w-full btn-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                        </svg>
+                        Mở trên GitHub
+                    </a>
                 </div>
-            </template>
+            </div>
+
+            <!-- Branches -->
+            <div class="enterprise-card" x-show="gitInsights.branches.length > 0">
+                <div class="enterprise-card-header">
+                    <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Branches</h4>
+                    <span class="text-xs text-slate-500" x-text="gitInsights.branches.length + ' total'"></span>
+                </div>
+                <div class="enterprise-card-body space-y-2">
+                    <template x-for="branch in gitInsights.branches.slice(0, 5)" :key="branch.name">
+                        <div class="flex items-center gap-2 p-2 bg-slate-800/50 rounded">
+                            <svg class="w-4 h-4 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M7 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                            </svg>
+                            <span class="text-sm text-slate-300 truncate" x-text="branch.name"></span>
+                            <span x-show="branch.protected"
+                                class="ml-auto px-1.5 py-0.5 bg-amber-500/20 text-amber-400 rounded text-xs">Protected</span>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
+            <!-- Releases -->
+            <div class="enterprise-card" x-show="gitInsights.releases.length > 0">
+                <div class="enterprise-card-header">
+                    <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Releases</h4>
+                    <span class="text-xs text-slate-500" x-text="gitInsights.releases.length + ' total'"></span>
+                </div>
+                <div class="enterprise-card-body space-y-3">
+                    <template x-for="release in gitInsights.releases" :key="release.tag_name">
+                        <a :href="release.html_url" target="_blank"
+                            class="block p-3 bg-slate-800/50 rounded-lg border border-slate-700/30 hover:border-sky-500/30 transition-colors">
+                            <div class="flex items-start gap-2">
+                                <span class="text-lg">🏷️</span>
+                                <div class="min-w-0">
+                                    <p class="text-sm text-slate-200 font-medium truncate" x-text="release.tag_name">
+                                    </p>
+                                    <p class="text-xs text-slate-500 mt-0.5" x-text="release.name || 'No name'"></p>
+                                    <p class="text-xs text-slate-500 mt-1" x-text="formatTimeAgo(release.published_at)">
+                                    </p>
+                                </div>
+                            </div>
+                        </a>
+                    </template>
+                </div>
+            </div>
+
+            <!-- Commit Type Distribution -->
+            <div class="enterprise-card" x-show="commits.length > 0">
+                <div class="enterprise-card-header">
+                    <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Commit Types</h4>
+                </div>
+                <div class="enterprise-card-body space-y-2">
+                    <template x-for="type in commitTypes" :key="type.label">
+                        <div class="flex items-center gap-2">
+                            <span :class="type.color" class="w-2 h-2 rounded-full"></span>
+                            <span class="text-sm text-slate-400" x-text="type.label"></span>
+                            <span class="text-sm text-slate-200 font-bold ml-auto"
+                                x-text="commits.filter(c => c.type === type.label).length">0</span>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
+            <!-- Recent Pull Requests -->
+            <div class="enterprise-card" x-show="gitInsights.pullRequests.items.length > 0">
+                <div class="enterprise-card-header">
+                    <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Recent PRs</h4>
+                </div>
+                <div class="enterprise-card-body space-y-3">
+                    <template x-for="pr in gitInsights.pullRequests.items.slice(0, 5)" :key="pr.number">
+                        <a :href="pr.html_url" target="_blank"
+                            class="block p-3 bg-slate-800/50 rounded-lg border border-slate-700/30 hover:border-sky-500/30 transition-colors">
+                            <div class="flex items-start gap-2">
+                                <span :class="{
+                                    'bg-emerald-500/20 text-emerald-400': pr.state === 'open',
+                                    'bg-purple-500/20 text-purple-400': pr.merged,
+                                    'bg-rose-500/20 text-rose-400': pr.state === 'closed' && !pr.merged
+                                }" class="text-xs font-bold px-1.5 py-0.5 rounded shrink-0"
+                                    x-text="pr.merged ? 'merged' : pr.state"></span>
+                                <div class="min-w-0">
+                                    <p class="text-sm text-slate-200 truncate" x-text="pr.title"></p>
+                                    <p class="text-xs text-slate-500 mt-0.5"
+                                        x-text="'#' + pr.number + ' by ' + pr.author"></p>
+                                </div>
+                            </div>
+                        </a>
+                    </template>
+                </div>
+            </div>
 
             <!-- Recent Issues -->
-            <template x-for="issue in (gitInsights.issues?.items || []).slice(0, 2)" :key="issue.number">
-                <div
-                    class="flex items-center gap-4 p-4 bg-slate-800/50 rounded-lg border border-slate-700/50 hover:border-slate-600 transition-colors">
-                    <div class="flex-shrink-0">
-                        <div class="w-10 h-10 rounded-full flex items-center justify-center"
-                            :class="issue.state === 'open' ? 'bg-amber-500/20' : 'bg-slate-600/20'">
-                            <svg class="w-5 h-5" :class="issue.state === 'open' ? 'text-amber-400' : 'text-slate-400'"
-                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <div class="flex items-center gap-2">
-                            <span class="text-sm font-medium text-white truncate" x-text="issue.title"></span>
-                            <span class="text-xs text-slate-500" x-text="'#' + issue.number"></span>
-                        </div>
-                        <div class="flex items-center gap-3 mt-1 text-xs text-slate-400">
-                            <span class="flex items-center gap-1">
-                                <img :src="'https://github.com/' + issue.author + '.png'" class="w-4 h-4 rounded-full"
-                                    onerror="this.style.display='none'">
-                                <span x-text="issue.author"></span>
-                            </span>
-                            <span x-text="formatTimeAgo(issue.created_at)"></span>
-                        </div>
-                    </div>
-                    <div class="flex-shrink-0">
-                        <span class="px-2 py-1 text-xs rounded-full font-medium"
-                            :class="issue.state === 'open' ? 'bg-amber-500/20 text-amber-400' : 'bg-slate-600/20 text-slate-400'"
-                            x-text="issue.state === 'open' ? 'Open' : 'Closed'">
-                        </span>
-                    </div>
+            <div class="enterprise-card" x-show="gitInsights.issues.items.length > 0">
+                <div class="enterprise-card-header">
+                    <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Recent Issues</h4>
                 </div>
-            </template>
-
-            <div x-show="(!gitInsights.pullRequests?.items || gitInsights.pullRequests.items.length === 0) && (!gitInsights.issues?.items || gitInsights.issues.items.length === 0)"
-                class="flex flex-col items-center justify-center py-12 text-slate-500">
-                <svg class="w-12 h-12 mb-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                </svg>
-                <p>No recent activity</p>
+                <div class="enterprise-card-body space-y-3">
+                    <template x-for="issue in gitInsights.issues.items.slice(0, 5)" :key="issue.number">
+                        <a :href="issue.html_url" target="_blank"
+                            class="block p-3 bg-slate-800/50 rounded-lg border border-slate-700/30 hover:border-sky-500/30 transition-colors">
+                            <div class="flex items-start gap-2">
+                                <span
+                                    :class="issue.state === 'open' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-slate-500/20 text-slate-400'"
+                                    class="text-xs font-bold px-1.5 py-0.5 rounded shrink-0"
+                                    x-text="issue.state"></span>
+                                <div class="min-w-0">
+                                    <p class="text-sm text-slate-200 truncate" x-text="issue.title"></p>
+                                    <p class="text-xs text-slate-500 mt-0.5"
+                                        x-text="'#' + issue.number + ' by ' + issue.author"></p>
+                                </div>
+                            </div>
+                        </a>
+                    </template>
+                </div>
             </div>
-        </div>
-    </div>
 
-    <!-- Learning Progress Section (Original) -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div class="surface p-6 rounded-xl border border-slate-700/50">
-            <h3 class="font-semibold text-white mb-4">Tiến độ theo giai đoạn</h3>
-            <canvas id="progressChart" height="200"></canvas>
-        </div>
-        <div class="surface p-6 rounded-xl border border-slate-700/50">
-            <h3 class="font-semibold text-white mb-4">Kỹ năng</h3>
-            <div class="space-y-4">
-                <template x-for="(value, skill) in progress.skills" :key="skill">
-                    <div>
-                        <div class="flex justify-between mb-1">
-                            <span class="text-sm text-slate-300" x-text="skill"></span>
-                            <span class="text-sm text-sky-400" x-text="value + '%'"></span>
-                        </div>
-                        <div class="w-full bg-slate-700 rounded-full h-2">
-                            <div class="bg-sky-500 h-2 rounded-full transition-all duration-500"
-                                :style="'width: ' + value + '%'"></div>
-                        </div>
-                    </div>
-                </template>
-            </div>
-        </div>
+        </aside>
     </div>
 </div>
-
-<script>
-    // Initialize charts when dashboard loads
-    document.addEventListener('alpine:initialized', () => {
-        setTimeout(() => {
-            initDashboardCharts();
-        }, 300);
-    });
-
-    function initDashboardCharts() {
-        const app = Alpine.data('cmsApp');
-        if (!app) return;
-
-        // Commit Activity Chart
-        const commitCtx = document.getElementById('commitChart');
-        if (commitCtx && app.gitInsights?.commitActivity?.length > 0) {
-            const weeks = app.gitInsights.commitActivity.map(w => {
-                const date = new Date(w.week * 1000);
-                return 'W' + date.getWeek();
-            });
-            const commits = app.gitInsights.commitActivity.map(w => w.total);
-
-            new Chart(commitCtx, {
-                type: 'line',
-                data: {
-                    labels: weeks,
-                    datasets: [{
-                        label: 'Commits',
-                        data: commits,
-                        borderColor: '#38bdf8',
-                        backgroundColor: 'rgba(56, 189, 248, 0.1)',
-                        fill: true,
-                        tension: 0.4,
-                        pointRadius: 3,
-                        pointBackgroundColor: '#38bdf8'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: { beginAtZero: true, grid: { color: 'rgba(148, 163, 184, 0.1)' }, ticks: { color: '#94a3b8', font: { size: 10 } } },
-                        x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 10 }, maxRotation: 45, minRotation: 45 } }
-                    }
-                }
-            });
-        }
-
-        // Contributors Chart
-        const contributorCtx = document.getElementById('contributorChart');
-        if (contributorCtx && app.gitInsights?.contributors?.length > 0) {
-            const names = app.gitInsights.contributors.slice(0, 8).map(c => c.login);
-            const contributions = app.gitInsights.contributors.slice(0, 8).map(c => c.contributions);
-
-            new Chart(contributorCtx, {
-                type: 'bar',
-                data: {
-                    labels: names,
-                    datasets: [{
-                        label: 'Contributions',
-                        data: contributions,
-                        backgroundColor: '#10b981',
-                        borderRadius: 4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: { beginAtZero: true, grid: { color: 'rgba(148, 163, 184, 0.1)' }, ticks: { color: '#94a3b8', font: { size: 10 } } },
-                        x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 10 }, maxRotation: 45, minRotation: 0 } }
-                    }
-                }
-            });
-        }
-    }
-
-    // Helper to get week number
-    Date.prototype.getWeek = function () {
-        const d = new Date(Date.UTC(this.getFullYear(), this.getMonth(), this.getDate()));
-        const dayNum = d.getUTCDay() || 7;
-        d.setUTCDate(d.getUTCDate() + 4 - dayNum);
-        const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
-        return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
-    };
-</script>

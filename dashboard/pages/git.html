@@ -1,253 +1,560 @@
 <div class="h-full flex flex-col" x-cloak>
     <div class="flex gap-6 h-full overflow-hidden">
 
-        <!-- LEFT: Main Content Area -->
+        <!-- LEFT: Main Content - Git Workflow Guide -->
         <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
-
-            <!-- Content Scroll Area -->
             <div class="flex-1 overflow-y-auto custom-scrollbar pr-2 space-y-6">
 
-                <!-- SECTION 1: Commit History -->
-                <section class="enterprise-card">
-                    <div class="enterprise-card-header">
-                        <h3 class="font-semibold text-white flex items-center gap-2">
-                            <svg class="w-5 h-5 text-sky-500" fill="currentColor" viewBox="0 0 24 24">
-                                <path
-                                    d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.341-3.369-1.341-.454-1.152-1.11-1.459-1.11-1.459-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12c0-5.523-4.477-10-10-10z" />
-                            </svg>
-                            Commit History
-                        </h3>
-                        <div class="flex items-center gap-3">
-                            <div class="enterprise-card px-4 py-2">
-                                <span
-                                    class="text-[10px] text-slate-500 block uppercase font-bold tracking-wider">Repository</span>
-                                <div class="flex items-center gap-2">
-                                    <div class="w-2 h-2 rounded-full"
-                                        :class="gitConfig.username ? 'bg-emerald-500' : 'bg-slate-500'"></div>
-                                    <span class="text-emerald-400 font-mono text-sm font-semibold"
-                                        x-text="gitConfig.repo || 'Not configured'"></span>
-                                </div>
-                            </div>
-                            <button @click="fetchCommits()" class="btn btn-secondary btn-sm p-2"
-                                :class="gitLoading ? 'opacity-50 cursor-not-allowed' : ''"
-                                :disabled="gitLoading || !gitConfig.username">
-                                <svg class="w-5 h-5" :class="gitLoading ? 'animate-spin' : ''" fill="none"
-                                    stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                                </svg>
-                            </button>
-                            <span
-                                class="text-xs text-slate-500 font-mono bg-slate-900/50 px-2 py-1 rounded border border-slate-700/50"
-                                x-text="commits.length + ' commits'"></span>
-                        </div>
+                <!-- Header -->
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-2xl font-bold text-white">Git Workflow Guide</h2>
+                        <p class="text-sm text-slate-400 mt-1">Quy trình chuẩn sử dụng Git với project thực tế</p>
                     </div>
-                    <div class="divide-y divide-slate-700/30">
-                        <template x-for="commit in commits" :key="commit.sha">
-                            <div class="px-5 py-4 hover:bg-slate-800/30 transition-colors">
-                                <div class="flex items-start justify-between gap-4">
-                                    <div class="flex-1 min-w-0">
-                                        <div class="flex items-center gap-2 mb-1">
-                                            <span :class="{
-                                                'bg-emerald-500/20 text-emerald-400 border-emerald-500/30': commit.type === 'feat',
-                                                'bg-rose-500/20 text-rose-400 border-rose-500/30': commit.type === 'fix',
-                                                'bg-blue-500/20 text-blue-400 border-blue-500/30': commit.type === 'docs',
-                                                'bg-amber-500/20 text-amber-400 border-amber-500/30': commit.type === 'test',
-                                                'bg-purple-500/20 text-purple-400 border-purple-500/30': commit.type === 'refactor',
-                                                'bg-slate-500/20 text-slate-400 border-slate-500/30': !commit.type || commit.type === 'unknown'
-                                            }" class="text-xs font-bold px-2 py-0.5 rounded border"
-                                                x-text="commit.type || 'unknown'"></span>
-                                            <span class="text-xs text-slate-500 font-mono"
-                                                x-text="commit.sha.substring(0, 7)"></span>
-                                        </div>
-                                        <div class="text-sm text-slate-200 font-medium" x-text="commit.message"></div>
-                                        <div x-show="commit.error" class="text-xs text-rose-400 mt-1"
-                                            x-text="commit.error"></div>
-                                        <div class="text-xs text-slate-500 mt-1"
-                                            x-text="new Date(commit.date).toLocaleDateString('vi-VN') + ' ' + new Date(commit.date).toLocaleTimeString('vi-VN', {hour: '2-digit', minute:'2-digit'})">
-                                        </div>
-                                    </div>
-                                    <div class="flex items-center gap-2">
-                                        <span :class="commit.isValid ? 'text-emerald-400' : 'text-rose-400'"
-                                            class="text-xs font-medium">
-                                            <span x-show="commit.isValid">Valid</span>
-                                            <span x-show="!commit.isValid">Invalid</span>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </template>
+                    <div class="flex items-center gap-2">
+                        <span class="badge badge-info">Git Flow</span>
+                        <span class="badge badge-success">Best Practices</span>
                     </div>
-                </section>
+                </div>
 
-                <!-- SECTION 2: Commit Type Guide -->
-                <section class="enterprise-card">
+                <!-- Workflow Overview Diagram - NEW: Early PR Flow -->
+                <div class="enterprise-card">
                     <div class="enterprise-card-header">
                         <h3 class="font-semibold text-white flex items-center gap-2">
                             <svg class="w-5 h-5 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
                             </svg>
-                            Conventional Commits Guide
+                            Luồng làm việc chuẩn (Team Workflow)
                         </h3>
                     </div>
                     <div class="enterprise-card-body">
-                        <p class="text-sm text-slate-400 mb-4">Standard commit message format for better collaboration
-                            and changelog generation.</p>
-                        <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
-                            <template x-for="type in commitTypes" :key="type.label">
-                                <div
-                                    class="flex items-center gap-2 p-3 bg-slate-800/50 rounded-lg border border-slate-700/30">
-                                    <span :class="type.color" class="w-3 h-3 rounded-full"></span>
-                                    <div>
-                                        <span class="text-sm font-bold text-slate-200" x-text="type.label"></span>
-                                        <p class="text-xs text-slate-500" x-text="type.desc"></p>
-                                    </div>
-                                </div>
-                            </template>
+                        <!-- Visual Flow -->
+                        <div class="flex flex-wrap items-center justify-center gap-2 text-sm mb-4">
+                            <div
+                                class="px-3 py-2 bg-slate-700/50 text-slate-300 rounded-lg border border-slate-600/30 font-mono text-xs">
+                                Issue/Task</div>
+                            <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                            </svg>
+                            <div
+                                class="px-3 py-2 bg-purple-500/20 text-purple-400 rounded-lg border border-purple-500/30 font-mono text-xs">
+                                feature/abc</div>
+                            <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                            </svg>
+                            <div
+                                class="px-3 py-2 bg-amber-500/20 text-amber-400 rounded-lg border border-amber-500/30 font-mono text-xs">
+                                Draft PR + Label</div>
+                            <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                            </svg>
+                            <div
+                                class="px-3 py-2 bg-sky-500/20 text-sky-400 rounded-lg border border-sky-500/30 font-mono text-xs">
+                                Code & Push</div>
+                            <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                            </svg>
+                            <div
+                                class="px-3 py-2 bg-emerald-500/20 text-emerald-400 rounded-lg border border-emerald-500/30 font-mono text-xs">
+                                Ready for Review</div>
+                            <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                            </svg>
+                            <div
+                                class="px-3 py-2 bg-rose-500/20 text-rose-400 rounded-lg border border-rose-500/30 font-mono text-xs">
+                                Merge</div>
                         </div>
-                        <div class="mt-4 p-3 bg-slate-800/50 rounded-lg border border-slate-700/30">
-                            <p class="text-xs text-slate-400 font-mono">&lt;type&gt;(&lt;scope&gt;): &lt;description&gt;
+
+                        <!-- Key Principle -->
+                        <div class="p-3 bg-amber-500/10 rounded-lg border border-amber-500/20 mb-4">
+                            <p class="text-sm text-amber-300 font-medium flex items-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                Nguyên tắc: Tạo PR sớm + Gắn nhãn để team biết bạn đang làm task nào
                             </p>
-                            <p class="text-xs text-slate-500 mt-1">Example: feat(auth): add JWT token refresh mechanism
-                            </p>
+                        </div>
+
+                        <p class="text-center text-slate-400 text-sm">Nhận Task → Tạo nhánh → Tạo Draft PR gắn nhãn "In
+                            Progress" → Code → Ready → Review → Merge</p>
+                    </div>
+                </div>
+
+                <!-- Step 1: Task Assignment & Branch Creation -->
+                <div class="enterprise-card">
+                    <div class="enterprise-card-header">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-sky-500/20 flex items-center justify-center">
+                                <span class="text-sky-400 font-bold">1</span>
+                            </div>
+                            <h3 class="font-semibold text-white">Nhận Task & Tạo Nhánh</h3>
                         </div>
                     </div>
-                </section>
+                    <div class="enterprise-card-body space-y-4">
+                        <p class="text-slate-400 text-sm">Khi được giao task/issue, tạo nhánh ngay và push lên để team
+                            theo dõi:</p>
+
+                        <div class="space-y-3">
+                            <div class="bg-slate-900/50 rounded-lg border border-slate-700/50 overflow-hidden">
+                                <div class="px-4 py-2 bg-slate-800/50 border-b border-slate-700/50">
+                                    <span class="text-xs text-slate-400 font-mono"># 1. Checkout develop và pull code
+                                        mới nhất</span>
+                                </div>
+                                <div class="p-4 space-y-2">
+                                    <code class="text-sm text-emerald-400 font-mono block">git checkout develop</code>
+                                    <code
+                                        class="text-sm text-emerald-400 font-mono block">git pull origin develop</code>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-900/50 rounded-lg border border-slate-700/50 overflow-hidden">
+                                <div class="px-4 py-2 bg-slate-800/50 border-b border-slate-700/50">
+                                    <span class="text-xs text-slate-400 font-mono"># 2. Tạo feature branch từ develop
+                                        (đặt tên rõ ràng)</span>
+                                </div>
+                                <div class="p-4">
+                                    <code
+                                        class="text-sm text-emerald-400 font-mono block mb-2"># Format: feature/{issue-id}-{mo-ta-ngan}</code>
+                                    <code
+                                        class="text-sm text-emerald-400 font-mono block">git checkout -b feature/123-login-page</code>
+                                    <code
+                                        class="text-sm text-emerald-400 font-mono block">git checkout -b feature/456-fix-api-timeout</code>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-900/50 rounded-lg border border-slate-700/50 overflow-hidden">
+                                <div class="px-4 py-2 bg-slate-800/50 border-b border-slate-700/50">
+                                    <span class="text-xs text-slate-400 font-mono"># 3. Push nhánh lên GitHub ngay (để
+                                        team thấy)</span>
+                                </div>
+                                <div class="p-4">
+                                    <code
+                                        class="text-sm text-emerald-400 font-mono">git push -u origin feature/123-login-page</code>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Early PR with Labels (KEY CONCEPT) -->
+                <div class="enterprise-card border-2 border-amber-500/30 bg-amber-500/5">
+                    <div class="enterprise-card-header">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center">
+                                <span class="text-amber-400 font-bold">2</span>
+                            </div>
+                            <h3 class="font-semibold text-white">Tạo Pull Request Sớm + Gắn Nhãn (Quan trọng)</h3>
+                        </div>
+                    </div>
+                    <div class="enterprise-card-body space-y-4">
+                        <p class="text-slate-400 text-sm">Tạo PR ngay sau khi tạo nhánh, gắn nhãn <code
+                                class="text-amber-400">In Progress</code> để team biết bạn đang làm task này:</p>
+
+                        <div class="p-4 bg-slate-900/50 rounded-lg border border-slate-700/50">
+                            <p class="text-sm text-sky-400 font-medium mb-3">Các bước thực hiện:</p>
+                            <ol class="text-sm text-slate-300 space-y-2 list-decimal list-inside">
+                                <li>Truy cập GitHub → Click <span class="text-emerald-400">"Compare & pull
+                                        request"</span></li>
+                                <li>Chọn base: <code class="text-sky-400">develop</code></li>
+                                <li>Tiêu đề: <code
+                                        class="text-slate-400">[WIP] Feature: Login page implementation</code></li>
+                                <li>Mô tả ngắn: Link issue, mô tả những gì sẽ làm</li>
+                                <li>Gắn nhãn: <span
+                                        class="px-2 py-0.5 bg-amber-500/20 text-amber-400 rounded text-xs">In
+                                        Progress</span> hoặc <span
+                                        class="px-2 py-0.5 bg-purple-500/20 text-purple-400 rounded text-xs">Draft</span>
+                                </li>
+                                <li>Gán assignee: Bản thân bạn</li>
+                                <li>Click <span class="text-emerald-400">"Create pull request"</span></li>
+                            </ol>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="p-3 bg-purple-500/10 rounded-lg border border-purple-500/20">
+                                <p class="text-sm text-purple-400 font-medium mb-2">Nhãn thường dùng:</p>
+                                <div class="space-y-1 text-sm">
+                                    <span class="px-2 py-1 bg-amber-500/20 text-amber-400 rounded">In Progress</span> -
+                                    Đang code<br>
+                                    <span class="px-2 py-1 bg-sky-500/20 text-sky-400 rounded">Ready for Review</span> -
+                                    Chờ review<br>
+                                    <span class="px-2 py-1 bg-emerald-500/20 text-emerald-400 rounded">Approved</span> -
+                                    Đã approve<br>
+                                    <span class="px-2 py-1 bg-rose-500/20 text-rose-400 rounded">Needs Changes</span> -
+                                    Cần sửa
+                                </div>
+                            </div>
+                            <div class="p-3 bg-emerald-500/10 rounded-lg border border-emerald-500/20">
+                                <p class="text-sm text-emerald-400 font-medium mb-2">Lợi ích:</p>
+                                <ul class="text-sm text-slate-300 space-y-1">
+                                    <li>• Team biết ai đang làm task nào</li>
+                                    <li>• Tránh 2 người làm cùng task</li>
+                                    <li>• Có thể xem progress qua commits</li>
+                                    <li>• Dễ dàng review sớm nếu cần</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Commit Changes -->
+                <div class="enterprise-card">
+                    <div class="enterprise-card-header">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center">
+                                <span class="text-amber-400 font-bold">3</span>
+                            </div>
+                            <h3 class="font-semibold text-white">Commit thay đổi</h3>
+                        </div>
+                    </div>
+                    <div class="enterprise-card-body space-y-4">
+                        <p class="text-slate-400 text-sm">Lưu các thay đổi với message chuẩn Conventional Commits:</p>
+
+                        <div class="space-y-3">
+                            <div class="bg-slate-900/50 rounded-lg border border-slate-700/50 overflow-hidden">
+                                <div class="px-4 py-2 bg-slate-800/50 border-b border-slate-700/50">
+                                    <span class="text-xs text-slate-400 font-mono"># Thêm file vào staging</span>
+                                </div>
+                                <div class="p-4">
+                                    <code class="text-sm text-emerald-400 font-mono">git add filename.js</code>
+                                    <span class="text-slate-500 mx-2">hoặc</span>
+                                    <code class="text-sm text-emerald-400 font-mono">git add .</code>
+                                    <span class="text-slate-500 text-xs ml-2">(thêm tất cả)</span>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-900/50 rounded-lg border border-slate-700/50 overflow-hidden">
+                                <div class="px-4 py-2 bg-slate-800/50 border-b border-slate-700/50">
+                                    <span class="text-xs text-slate-400 font-mono"># Commit với message chuẩn</span>
+                                </div>
+                                <div class="p-4">
+                                    <code
+                                        class="text-sm text-emerald-400 font-mono block mb-2">git commit -m "feat(auth): add JWT authentication"</code>
+                                    <code
+                                        class="text-sm text-emerald-400 font-mono block">git commit -m "fix(api): resolve null pointer exception"</code>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-900/50 rounded-lg border border-slate-700/50 overflow-hidden">
+                                <div class="px-4 py-2 bg-slate-800/50 border-b border-slate-700/50">
+                                    <span class="text-xs text-slate-400 font-mono"># Xem lịch sử commit</span>
+                                </div>
+                                <div class="p-4">
+                                    <code
+                                        class="text-sm text-emerald-400 font-mono">git log --oneline --graph --decorate</code>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Commit Type Guide -->
+                        <div class="mt-4 p-4 bg-slate-800/30 rounded-lg border border-slate-700/30">
+                            <p class="text-sm text-slate-300 mb-3 font-medium">Các loại commit:</p>
+                            <div class="grid grid-cols-2 md:grid-cols-3 gap-2 text-sm">
+                                <div class="flex items-center gap-2">
+                                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                                    <span class="text-slate-400"><code class="text-emerald-400">feat:</code> Tính năng
+                                        mới</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+                                    <span class="text-slate-400"><code class="text-rose-400">fix:</code> Sửa lỗi</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                                    <span class="text-slate-400"><code class="text-blue-400">docs:</code> Tài
+                                        liệu</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                                    <span class="text-slate-400"><code class="text-amber-400">test:</code> Test
+                                        case</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="w-2 h-2 rounded-full bg-purple-500"></span>
+                                    <span class="text-slate-400"><code class="text-purple-400">refactor:</code> Cải
+                                        tiến</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="w-2 h-2 rounded-full bg-slate-500"></span>
+                                    <span class="text-slate-400"><code class="text-slate-400">chore:</code> Bảo
+                                        trì</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 4: Push & Pull Request -->
+                <div class="enterprise-card">
+                    <div class="enterprise-card-header">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-rose-500/20 flex items-center justify-center">
+                                <span class="text-rose-400 font-bold">4</span>
+                            </div>
+                            <h3 class="font-semibold text-white">Push & Pull Request</h3>
+                        </div>
+                    </div>
+                    <div class="enterprise-card-body space-y-4">
+                        <p class="text-slate-400 text-sm">Đưa code lên GitHub và tạo Pull Request để review:</p>
+
+                        <div class="space-y-3">
+                            <div class="bg-slate-900/50 rounded-lg border border-slate-700/50 overflow-hidden">
+                                <div class="px-4 py-2 bg-slate-800/50 border-b border-slate-700/50">
+                                    <span class="text-xs text-slate-400 font-mono"># Push lần đầu (thiết lập
+                                        upstream)</span>
+                                </div>
+                                <div class="p-4">
+                                    <code
+                                        class="text-sm text-emerald-400 font-mono">git push -u origin feature/login-page</code>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-900/50 rounded-lg border border-slate-700/50 overflow-hidden">
+                                <div class="px-4 py-2 bg-slate-800/50 border-b border-slate-700/50">
+                                    <span class="text-xs text-slate-400 font-mono"># Push các commit tiếp theo</span>
+                                </div>
+                                <div class="p-4">
+                                    <code class="text-sm text-emerald-400 font-mono">git push</code>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-900/50 rounded-lg border border-slate-700/50 overflow-hidden">
+                                <div class="px-4 py-2 bg-slate-800/50 border-b border-slate-700/50">
+                                    <span class="text-xs text-slate-400 font-mono"># Cập nhật branch với develop
+                                        (rebase)</span>
+                                </div>
+                                <div class="p-4 space-y-2">
+                                    <code class="text-sm text-emerald-400 font-mono block">git fetch origin</code>
+                                    <code
+                                        class="text-sm text-emerald-400 font-mono block">git rebase origin/develop</code>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-4 bg-emerald-500/5 rounded-lg border border-emerald-500/20">
+                            <p class="text-sm text-emerald-400 font-medium mb-2">Sau khi push:</p>
+                            <ol class="text-sm text-slate-300 space-y-1 list-decimal list-inside">
+                                <li>Truy cập repository trên GitHub</li>
+                                <li>Click "Compare & pull request"</li>
+                                <li>Chọn base branch: <code class="text-sky-400">develop</code></li>
+                                <li>Viết mô tả rõ ràng về thay đổi</li>
+                                <li>Gán reviewer và tạo PR</li>
+                                <li>Sau khi approve: merge vào develop</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 5: Merge & Cleanup -->
+                <div class="enterprise-card">
+                    <div class="enterprise-card-header">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center">
+                                <span class="text-purple-400 font-bold">5</span>
+                            </div>
+                            <h3 class="font-semibold text-white">Merge & Dọn dẹp</h3>
+                        </div>
+                    </div>
+                    <div class="enterprise-card-body space-y-4">
+                        <p class="text-slate-400 text-sm">Sau khi PR được merge, dọn dẹp branch local:</p>
+
+                        <div class="space-y-3">
+                            <div class="bg-slate-900/50 rounded-lg border border-slate-700/50 overflow-hidden">
+                                <div class="px-4 py-2 bg-slate-800/50 border-b border-slate-700/50">
+                                    <span class="text-xs text-slate-400 font-mono"># Chuyển về develop</span>
+                                </div>
+                                <div class="p-4">
+                                    <code class="text-sm text-emerald-400 font-mono">git checkout develop</code>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-900/50 rounded-lg border border-slate-700/50 overflow-hidden">
+                                <div class="px-4 py-2 bg-slate-800/50 border-b border-slate-700/50">
+                                    <span class="text-xs text-slate-400 font-mono"># Pull code mới sau merge</span>
+                                </div>
+                                <div class="p-4">
+                                    <code class="text-sm text-emerald-400 font-mono">git pull origin develop</code>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-900/50 rounded-lg border border-slate-700/50 overflow-hidden">
+                                <div class="px-4 py-2 bg-slate-800/50 border-b border-slate-700/50">
+                                    <span class="text-xs text-slate-400 font-mono"># Xóa branch local đã merge</span>
+                                </div>
+                                <div class="p-4">
+                                    <code
+                                        class="text-sm text-emerald-400 font-mono">git branch -d feature/login-page</code>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-900/50 rounded-lg border border-slate-700/50 overflow-hidden">
+                                <div class="px-4 py-2 bg-slate-800/50 border-b border-slate-700/50">
+                                    <span class="text-xs text-slate-400 font-mono"># Xóa branch remote đã merge</span>
+                                </div>
+                                <div class="p-4">
+                                    <code
+                                        class="text-sm text-emerald-400 font-mono">git push origin --delete feature/login-page</code>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Common Commands Reference -->
+                <div class="enterprise-card">
+                    <div class="enterprise-card-header">
+                        <h3 class="font-semibold text-white flex items-center gap-2">
+                            <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            Lệnh tham khảo nhanh
+                        </h3>
+                    </div>
+                    <div class="enterprise-card-body">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                            <div class="space-y-2">
+                                <p class="text-slate-400 font-medium mb-2">Branch</p>
+                                <div class="flex justify-between">
+                                    <code class="text-emerald-400">git branch</code>
+                                    <span class="text-slate-500">Liệt kê branches</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <code class="text-emerald-400">git branch -a</code>
+                                    <span class="text-slate-500">Tất cả branches</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <code class="text-emerald-400">git checkout -b name</code>
+                                    <span class="text-slate-500">Tạo & chuyển branch</span>
+                                </div>
+                            </div>
+                            <div class="space-y-2">
+                                <p class="text-slate-400 font-medium mb-2">Undo</p>
+                                <div class="flex justify-between">
+                                    <code class="text-emerald-400">git restore file</code>
+                                    <span class="text-slate-500">Bỏ thay đổi chưa stage</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <code class="text-emerald-400">git reset --soft HEAD~1</code>
+                                    <span class="text-slate-500">Bỏ commit giữ changes</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <code class="text-emerald-400">git revert commit-id</code>
+                                    <span class="text-slate-500">Revert commit</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
             </div>
         </div>
 
-        <!-- RIGHT: Sidebar -->
+        <!-- RIGHT: Quick Reference Sidebar -->
         <aside class="w-80 flex flex-col gap-4 overflow-y-auto pr-2 custom-scrollbar shrink-0">
 
-            <!-- Quick Actions -->
+            <!-- Branch Naming -->
             <div class="enterprise-card">
                 <div class="enterprise-card-header">
-                    <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Quick Actions</h4>
+                    <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Quy ước đặt tên</h4>
                 </div>
                 <div class="enterprise-card-body space-y-2">
-                    <button @click="fetchCommits()" class="btn btn-primary w-full btn-sm"
-                        :disabled="gitLoading || !gitConfig.username">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                        </svg>
-                        <span x-text="gitLoading ? 'Loading...' : 'Fetch Commits'"></span>
-                    </button>
-                    <button @click="saveGitConfig()" class="btn btn-secondary w-full btn-sm">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                        </svg>
-                        <span>Save Config</span>
-                    </button>
-                    <a :href="`https://github.com/${gitConfig.username}/${gitConfig.repo}/commits`" target="_blank"
-                        class="btn btn-ghost w-full btn-sm" x-show="gitConfig.username && gitConfig.repo">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                        </svg>
-                        <span>View on GitHub</span>
-                    </a>
+                    <div class="flex items-center gap-2 p-2 bg-slate-800/50 rounded">
+                        <code class="text-emerald-400 text-sm">feature/login-page</code>
+                    </div>
+                    <div class="flex items-center gap-2 p-2 bg-slate-800/50 rounded">
+                        <code class="text-emerald-400 text-sm">fix/api-timeout</code>
+                    </div>
+                    <div class="flex items-center gap-2 p-2 bg-slate-800/50 rounded">
+                        <code class="text-emerald-400 text-sm">hotfix/critical-bug</code>
+                    </div>
+                    <div class="flex items-center gap-2 p-2 bg-slate-800/50 rounded">
+                        <code class="text-emerald-400 text-sm">release/v1.2.0</code>
+                    </div>
                 </div>
             </div>
 
-            <!-- Commit Stats -->
+            <!-- Common Scenarios -->
             <div class="enterprise-card">
                 <div class="enterprise-card-header">
-                    <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Commit Statistics</h4>
+                    <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Tình huống thường gặp</h4>
                 </div>
-                <div class="enterprise-card-body">
-                    <div class="grid grid-cols-2 gap-3">
-                        <div class="text-center p-3 bg-slate-800/50 rounded-lg border border-slate-700/30">
-                            <span class="block text-2xl font-bold text-white" x-text="commits.length">0</span>
-                            <span class="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Total</span>
-                        </div>
-                        <div class="text-center p-3 bg-slate-800/50 rounded-lg border border-slate-700/30">
-                            <span class="block text-2xl font-bold text-emerald-400"
-                                x-text="commits.filter(c => c.isValid).length">0</span>
-                            <span class="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Valid</span>
-                        </div>
-                        <div class="text-center p-3 bg-slate-800/50 rounded-lg border border-slate-700/30">
-                            <span class="block text-2xl font-bold text-rose-400"
-                                x-text="commits.filter(c => !c.isValid).length">0</span>
-                            <span class="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Invalid</span>
-                        </div>
-                        <div class="text-center p-3 bg-slate-800/50 rounded-lg border border-slate-700/30">
-                            <span class="block text-2xl font-bold text-sky-400"
-                                x-text="Math.round((commits.filter(c => c.isValid).length / (commits.length || 1)) * 100) + '%'">0%</span>
-                            <span
-                                class="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Compliance</span>
-                        </div>
+                <div class="enterprise-card-body space-y-3">
+                    <div class="p-3 bg-slate-800/30 rounded-lg">
+                        <p class="text-sm text-rose-400 font-medium mb-1">Conflict khi merge</p>
+                        <code class="text-xs text-emerald-400 font-mono block">git status</code>
+                        <code class="text-xs text-emerald-400 font-mono block"># Sửa file conflict</code>
+                        <code class="text-xs text-emerald-400 font-mono block">git add .</code>
+                        <code
+                            class="text-xs text-emerald-400 font-mono block">git commit -m "fix: resolve merge conflict"</code>
+                    </div>
+                    <div class="p-3 bg-slate-800/30 rounded-lg">
+                        <p class="text-sm text-amber-400 font-medium mb-1">Quên commit message</p>
+                        <code class="text-xs text-emerald-400 font-mono block">git commit --amend</code>
+                    </div>
+                    <div class="p-3 bg-slate-800/30 rounded-lg">
+                        <p class="text-sm text-sky-400 font-medium mb-1">Stash tạm thởi</p>
+                        <code class="text-xs text-emerald-400 font-mono block">git stash</code>
+                        <code class="text-xs text-emerald-400 font-mono block"># Làm việc khác...</code>
+                        <code class="text-xs text-emerald-400 font-mono block">git stash pop</code>
                     </div>
                 </div>
             </div>
 
-            <!-- Commit Type Distribution -->
-            <div class="enterprise-card" x-show="commits.length > 0">
+            <!-- Best Practices -->
+            <div class="enterprise-card">
                 <div class="enterprise-card-header">
-                    <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Type Distribution</h4>
+                    <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Best Practices</h4>
                 </div>
                 <div class="enterprise-card-body">
-                    <div class="space-y-2">
-                        <template x-for="type in commitTypes" :key="type.label">
-                            <div class="flex items-center gap-2">
-                                <span :class="type.color" class="w-2 h-2 rounded-full"></span>
-                                <span class="text-sm text-slate-400" x-text="type.label"></span>
-                                <span class="text-sm text-slate-200 font-bold ml-auto"
-                                    x-text="commits.filter(c => c.type === type.label).length">0</span>
-                            </div>
-                        </template>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Git Config Info -->
-            <div class="enterprise-card" x-show="gitConfig.username && gitConfig.repo">
-                <div class="enterprise-card-header">
-                    <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Repository Info</h4>
-                </div>
-                <div class="enterprise-card-body space-y-2">
-                    <div class="flex justify-between text-sm">
-                        <span class="text-slate-400">Owner</span>
-                        <span class="text-slate-200" x-text="gitConfig.username"></span>
-                    </div>
-                    <div class="flex justify-between text-sm">
-                        <span class="text-slate-400">Repository</span>
-                        <span class="text-slate-200" x-text="gitConfig.repo"></span>
-                    </div>
-                    <div class="flex justify-between text-sm">
-                        <span class="text-slate-400">Token</span>
-                        <span class="text-slate-200" x-text="gitConfig.token ? 'Configured' : 'Not set'"></span>
-                    </div>
-                    <a :href="`https://github.com/${gitConfig.username}/${gitConfig.repo}`" target="_blank"
-                        class="btn btn-secondary w-full btn-sm mt-2">
-                        <span>Open Repository</span>
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                        </svg>
-                    </a>
-                </div>
-            </div>
-
-            <!-- Not Configured -->
-            <div class="enterprise-card border-l-4 border-l-amber-500" x-show="!gitConfig.username || !gitConfig.repo">
-                <div class="enterprise-card-body">
-                    <div class="flex items-start gap-3">
-                        <svg class="w-5 h-5 text-amber-400 shrink-0 mt-0.5" fill="none" stroke="currentColor"
-                            viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <div>
-                            <p class="text-sm text-slate-200 font-medium">Repository not configured</p>
-                            <p class="text-xs text-slate-400 mt-1">Set up your GitHub credentials in Settings to track
-                                commits.</p>
-                            <a href="#/settings"
-                                class="text-sky-400 hover:text-sky-300 text-xs mt-2 inline-block">Configure now →</a>
-                        </div>
-                    </div>
+                    <ul class="space-y-2 text-sm text-slate-300">
+                        <li class="flex items-start gap-2">
+                            <svg class="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M5 13l4 4L19 7" />
+                            </svg>
+                            Commit thường xuyên, mỗi commit 1 logic
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <svg class="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M5 13l4 4L19 7" />
+                            </svg>
+                            Viết message rõ ràng, có prefix
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <svg class="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M5 13l4 4L19 7" />
+                            </svg>
+                            Pull trước khi push
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <svg class="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M5 13l4 4L19 7" />
+                            </svg>
+                            Xóa branch sau khi merge
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <svg class="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M5 13l4 4L19 7" />
+                            </svg>
+                            Không commit trực tiếp lên main
+                        </li>
+                    </ul>
                 </div>
             </div>
 

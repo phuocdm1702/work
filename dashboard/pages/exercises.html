@@ -1,0 +1,144 @@
+<div class="h-full flex flex-col" x-cloak>
+    <div class="flex gap-6 h-full overflow-hidden">
+        <!-- Lessons List -->
+        <aside class="w-80 flex flex-col gap-4 overflow-y-auto pr-2 custom-scrollbar">
+            <div class="enterprise-card">
+                <div class="enterprise-card-header">
+                    <div>
+                        <h4 class="font-bold text-xs text-slate-500 uppercase tracking-widest">Danh sách bài tập</h4>
+                        <p class="text-xs text-slate-400 mt-1">Phân tích chi tiết từng bài làm</p>
+                    </div>
+                </div>
+                <div class="enterprise-card-body space-y-3">
+                    <template x-for="lesson in exercises.lessons" :key="lesson.id">
+                        <div class="space-y-2">
+                            <button @click="loadExerciseLesson(lesson.id)"
+                                :class="exercises.currentLessonId === lesson.id ? 'text-sky-400 bg-sky-500/10 border-sky-500/40' : 'text-slate-300 hover:bg-slate-800/50 border-transparent'"
+                                class="w-full text-left p-3 rounded-lg border transition-all">
+                                <div class="font-bold text-sm" x-text="lesson.title"></div>
+                                <div class="text-xs text-slate-500 mt-1" x-text="lesson.folder"></div>
+                            </button>
+
+                            <!-- Exercise files for this lesson -->
+                            <template x-if="exercises.currentLessonId === lesson.id">
+                                <div class="ml-4 space-y-1">
+                                    <template x-for="file in lesson.files" :key="file.name">
+                                        <button @click="loadExerciseFile(file)"
+                                            :class="exercises.currentExercise?.name === file.name ? 'text-emerald-400 bg-emerald-500/10' : 'text-slate-400 hover:text-slate-200'"
+                                            class="w-full text-left px-3 py-2 rounded text-sm transition-all flex items-center gap-2">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                            </svg>
+                                            <span x-text="file.title"></span>
+                                        </button>
+                                    </template>
+                                </div>
+                            </template>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Content Area -->
+        <div class="flex-1 flex flex-col min-w-0">
+            <article class="flex-1 enterprise-card overflow-y-auto custom-scrollbar p-10 docs-content">
+                <div class="max-w-4xl mx-auto">
+                    <div class="flex items-start justify-between gap-4 mb-8">
+                        <div class="min-w-0">
+                            <div class="text-xs text-slate-500 font-medium">Phân tích bài tập</div>
+                            <h1 class="text-3xl font-extrabold text-white tracking-tight mt-1"
+                                x-text="exercises.currentExercise?.title || 'Chọn một bài tập'"></h1>
+                            <p class="text-slate-400 mt-2" x-text="exercises.currentLessonTitle"
+                                x-show="exercises.currentLessonTitle"></p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button @click="loadExerciseFile(exercises.currentExercise)"
+                                x-show="exercises.currentExercise" class="btn btn-secondary btn-sm">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                </svg>
+                                <span>Reload</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <template x-if="exercises.loading">
+                        <div class="flex items-center gap-3 text-slate-400">
+                            <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-sky-500"></div>
+                            <span class="text-sm">Đang tải phân tích...</span>
+                        </div>
+                    </template>
+
+                    <template x-if="exercises.error">
+                        <div class="enterprise-card border-l-4 border-l-rose-500 bg-rose-500/10">
+                            <div class="enterprise-card-body">
+                                <div class="font-bold text-rose-400">Không thể tải phân tích</div>
+                                <div class="text-sm mt-2 text-rose-200" x-text="exercises.error"></div>
+                            </div>
+                        </div>
+                    </template>
+
+                    <template x-if="!exercises.loading && !exercises.error && exercises.analysisHtml">
+                        <div class="journal-content">
+                            <div x-html="exercises.analysisHtml"></div>
+                        </div>
+                    </template>
+
+                    <template x-if="!exercises.currentExercise && !exercises.loading">
+                        <div class="empty-state">
+                            <svg class="empty-state-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            <div class="empty-state-title">Chưa chọn bài tập</div>
+                            <div class="empty-state-description">
+                                Chọn một bài tập từ danh sách bên trái để xem phân tích chi tiết.
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </article>
+        </div>
+
+        <!-- Info Panel -->
+        <aside class="w-72 hidden xl:block">
+            <div class="enterprise-card sticky top-0">
+                <div class="enterprise-card-header">
+                    <h4 class="text-xs font-bold text-slate-500 uppercase tracking-widest">Thông tin</h4>
+                </div>
+                <div class="enterprise-card-body space-y-4">
+                    <div class="text-sm text-slate-400">
+                        <p class="mb-2">Trang này hiển thị phân tích chi tiết các bài tập đã làm.</p>
+                        <p>Mỗi bài tập có file phân tích <code>.md</code> riêng với:</p>
+                        <ul class="list-disc ml-4 mt-2 space-y-1 text-slate-500">
+                            <li>Mô tả yêu cầu</li>
+                            <li>Phân tích code</li>
+                            <li>Đánh giá điểm mạnh/yếu</li>
+                            <li>Gợi ý cải thiện</li>
+                        </ul>
+                    </div>
+
+                    <div class="border-t border-slate-700/50 pt-4">
+                        <div class="text-xs text-slate-500 uppercase tracking-wider mb-2">Bài tập hiện tại</div>
+                        <div class="flex items-center gap-2">
+                            <span class="badge badge-info" x-text="exercises.currentLessonTitle || 'Chưa chọn'"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </div>
+</div>
+
+<script>
+    // Exercises page specific functions
+    function scrollToHeading(id) {
+        const element = document.getElementById(id);
+        if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }
+</script>

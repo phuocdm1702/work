@@ -86,9 +86,10 @@
                     <ul x-show="journal.toc && journal.toc.length > 0" class="space-y-3">
                         <template x-for="item in journal.toc" :key="item.id">
                             <li>
-                                <a :href="'#' + item.id"
-                                    class="text-sm text-slate-400 hover:text-sky-400 transition-colors block py-1"
-                                    :style="'padding-left: ' + ((item.level - 1) * 12) + 'px;'" x-text="item.title"></a>
+                                <button @click.prevent="scrollToTocItem(item.id)"
+                                    class="text-sm text-slate-400 hover:text-sky-400 transition-colors block py-1 text-left w-full"
+                                    :style="'padding-left: ' + ((item.level - 1) * 12) + 'px;'"
+                                    :class="item.level === 1 ? 'font-bold' : ''" x-text="item.title"></button>
                             </li>
                         </template>
                     </ul>
@@ -98,18 +99,12 @@
     </div>
 </div>
 
-<ul class="space-y-2">
-    <template x-for="item in journal.toc" :key="item.id">
-        <li>
-            <a :href="'#' + item.id"
-                :class="item.level === 1 ? 'font-bold text-slate-200' : (item.level === 2 ? 'text-slate-300' : 'text-slate-400')"
-                class="text-sm hover:text-sky-400 transition-colors block py-1"
-                :style="item.level === 3 ? 'padding-left: 12px' : (item.level === 2 ? 'padding-left: 6px' : 'padding-left: 0px')"
-                x-text="item.title"></a>
-        </li>
-    </template>
-</ul>
-</div>
-</aside>
-</div>
-</div>
+<script>
+    // Smooth scroll function for TOC items
+    function scrollToTocItem(id) {
+        const element = document.getElementById(id);
+        if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }
+</script>
